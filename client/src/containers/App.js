@@ -15,7 +15,7 @@ class App extends React.Component {
   }
 
   onSearch = () => {
-    fetch(`http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${this.state.searchField}`)
+    fetch(`/api/searchmovies/?search=${this.state.searchField}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
