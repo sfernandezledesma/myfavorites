@@ -1,50 +1,34 @@
 import React from 'react';
-import { connect } from 'react-redux';
-//import logo from './logo.svg';
 import './App.css';
-import Button from '@material-ui/core/Button';
 import TopBar from "../components/TopBar";
-
-import { setSearchField } from "../actions";
-
-const mapStateToProps = (state) => {
-  return {
-    searchField: state.searchField
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onSearchChange: (event) => dispatch(setSearchField(event.target.value))
-  };
-};
+import ItemList from "./ItemList";
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchField: ""
+    };
+  }
+
+  onSearch = () => {
+    fetch(`http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&t=${this.state.searchField}`)
+    .then(response => response.json())
+    .then(data => console.log(data));
+  }
+
+  onType = (event) => {
+    this.setState({searchField: event.target.value});
+  }
+
   render() {
-    const { searchField, onSearchChange } = this.props;
     return (
       <div>
-        <TopBar onSearchChange={onSearchChange} />
-        <Button variant="contained" color="primary">
-          {searchField}
-        </Button>
-        {/* <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header> */}
+        <TopBar onSearch={this.onSearch} onType={this.onType} />
+        <ItemList />
       </div>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
