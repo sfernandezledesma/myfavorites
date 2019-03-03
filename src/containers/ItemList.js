@@ -7,8 +7,6 @@ import CardActions from "@material-ui/core/CardActions";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
 class ItemList extends React.Component {
   constructor(props) {
     super(props);
@@ -19,22 +17,23 @@ class ItemList extends React.Component {
 
   render() {
     const { spacing } = this.state;
+    const { items } = this.props;
     return (
       <Grid container justify="center" spacing={spacing} style={{ width: "100%", padding: "1%" }}>
-        {cards.map(card => (
-          <Grid item key={card} sm={6} md={4} lg={3}>
+        {items.map((item, index) => (
+          <Grid item key={index} sm={6} md={4} lg={3}>
             <Card>
               <CardMedia
-                style={{ height: "100px" }}
-                image="https://www.google.com/logos/doodles/2019/desi-arnazs-102nd-birthday-5686409284288512-s.png" // eslint-disable-line max-len
-                title="Image title"
+                style={{ height: "200px" }}
+                image={item.Poster}
+                title={item.Title}
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
-                  Heading
+                  {item.Title}
                 </Typography>
                 <Typography>
-                  This is a media card. You can use this section to describe the content.
+                  {item.Year}
                 </Typography>
               </CardContent>
               <CardActions>
