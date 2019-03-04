@@ -15,8 +15,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/searchmovies', (req, res) => {
   const searchField = req.query.search;
-  //return res.json({Response: "False", Error:"Huehuehue"});
   fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${searchField}`)
+    .then(response => response.json())
+    .then(data => res.json(data))
+    .catch(err => res.status(400).json("Could not connect to OMDb API"));
+});
+
+app.get('/api/id/:id', (req, res) => {
+  const imdbID = req.params.id;
+  fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to OMDb API"));

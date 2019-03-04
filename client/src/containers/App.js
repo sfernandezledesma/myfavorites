@@ -3,6 +3,7 @@ import './App.css';
 import TopBar from "../components/TopBar";
 import ItemList from "./ItemList";
 import { Typography } from '@material-ui/core';
+import Details from '../components/Details';
 
 class App extends React.Component {
   constructor(props) {
@@ -10,7 +11,9 @@ class App extends React.Component {
     this.state = {
       errorMessage: "",
       searchField: "",
-      searchResults: []
+      searchResults: [],
+      detailsOpen: false,
+      item: {}
     };
   }
 
@@ -31,11 +34,19 @@ class App extends React.Component {
     this.setState({ searchField: event.target.value });
   }
 
+  onDetailsOpen = (item) => {
+    this.setState({ detailsOpen: true, item: item });
+  }
+
+  onDetailsClose = () => {
+    this.setState({ detailsOpen: false });
+  }
+
   renderResults = () => {
     if (this.state.errorMessage) {
-      return <Typography  variant="h5" align="center">Error: {this.state.errorMessage}</Typography>;
+      return <Typography variant="h5" align="center">Error: {this.state.errorMessage}</Typography>;
     } else {
-      return <ItemList items={this.state.searchResults} />;
+      return <ItemList items={this.state.searchResults} onDetailsOpen={this.onDetailsOpen} />;
     }
   }
 
@@ -43,6 +54,7 @@ class App extends React.Component {
     return (
       <div>
         <TopBar onSearch={this.onSearch} onType={this.onType} />
+        < Details item={this.state.item} detailsOpen={this.state.detailsOpen} onDetailsClose={this.onDetailsClose} />
         {this.renderResults()}
       </div>
     );
