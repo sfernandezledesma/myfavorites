@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/searchmovies/:title', (req, res) => {
   const title = req.params.title;
-  fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
+  fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to OMDb API"));
@@ -23,7 +23,7 @@ app.get('/api/searchmovies/:title', (req, res) => {
 
 app.get('/api/id/:id', (req, res) => {
   const imdbID = req.params.id;
-  fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
+  fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to OMDb API"));
