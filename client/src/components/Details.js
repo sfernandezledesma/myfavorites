@@ -13,7 +13,7 @@ const renderContents = (info) => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="subtitle2">
-            {info.Year} | {info.Type.toUpperCase() + (info.Type === "movie" ? " - " + info.Runtime : "")} | {info.Country}
+            {info.Year} | {info.Type.toUpperCase() + (info.Type === "movie" ? " | " + info.Runtime : "")} | {info.Country}
           </Typography>
           <Typography>
             {info.Genre}
@@ -37,7 +37,7 @@ const renderContents = (info) => {
       </Fragment>
     );
   } else {
-    return <Fragment></Fragment>;
+    return null;
   }
 }
 
