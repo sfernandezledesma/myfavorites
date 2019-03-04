@@ -13,9 +13,9 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/api/searchmovies', (req, res) => {
-  const searchField = req.query.search;
-  fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${searchField}`)
+app.get('/api/searchmovies/:title', (req, res) => {
+  const title = req.params.title;
+  fetch(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to OMDb API"));
