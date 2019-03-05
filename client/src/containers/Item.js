@@ -19,7 +19,7 @@ class Item extends React.Component {
         .then(response => response.json())
         .then(data => {
           console.log(data);
-          if (data.vote_count) {
+          if (data.vote_count >= 0) {
             this.setState({ info: data, detailsOpen: true/*, errorMessage: ""*/ });
           } else {
             //this.setState({ errorMessage: data.Error });
@@ -77,7 +77,7 @@ class Item extends React.Component {
             <Typography>
               TMDb Rating: {info.vote_average} | Votes: {info.vote_count}
             </Typography>
-            <Typography>
+            <Typography align="justify">
               {info.overview || ""}
             </Typography>
           </CardContent>
