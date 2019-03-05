@@ -13,19 +13,19 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/api/searchmovies/:title', (req, res) => {
-  const title = req.params.title;
-  fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=en-US&page=1&include_adult=false`)
+app.get('/api/search/:language/:title', (req, res) => {
+  const { language, title } = req.params;
+  fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=${language}&page=1&include_adult=false`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to TMDb API"));
 });
-app.get('/api/id/:media_type/:id', (req, res) => {
-  const { id, media_type } = req.params;
-  fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}`)
+app.get('/api/id/:language/:media_type/:id', (req, res) => {
+  const { language, media_type, id } = req.params;
+  fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=${language}`)
     .then(response => response.json())
     .then(data => res.json(data))
-    .catch(err => res.status(400).json("Could not connect to OMDb API"));
+    .catch(err => res.status(400).json("Could not connect to TMDb API"));
 });
 
 // app.get('/api/searchmovies/:title', (req, res) => {

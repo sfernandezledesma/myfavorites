@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
+import { AppContext } from "./AppContext";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
 class Item extends React.Component {
+  static contextType = AppContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -10,22 +13,42 @@ class Item extends React.Component {
     };
   }
 
-  onDetailsOpen = () => {
+  componentDidMount() {
+    this.currentLanguage = this.context.language;
+  }
+
+  componentDidUpdate() {
+    if (this.context.language !== this.currentLanguage) {
+      this.currentLanguage = this.context.language;
+      if (this.state.detailsOpen) {
+        this.fetchDetails();
+      }
+    }
+  }
+
+  fetchDetails = () => {
     const { id, media_type } = this.props.item;
+    const { language } = this.context;
+    return fetch(`/api/id/${language}/${media_type}/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        if (data.id) {
+          this.setState({ info: data/*, errorMessage: ""*/ });
+        } else {
+          //this.setState({ errorMessage: data.Error });
+        }
+      })
+      .catch(err => this.setState({ errorMessage: err }));
+  }
+
+  onDetailsOpen = async () => {
+    const { id } = this.props.item;
     if (this.state.info.id === id) {
       this.setState({ detailsOpen: true });
     } else {
-      fetch(`/api/id/${media_type}/${id}`)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          if (data.id) {
-            this.setState({ info: data, detailsOpen: true/*, errorMessage: ""*/ });
-          } else {
-            //this.setState({ errorMessage: data.Error });
-          }
-        })
-        .catch(err => this.setState({ errorMessage: err }));
+      await this.fetchDetails();
+      this.setState({ detailsOpen: true });
     }
   }
 
@@ -85,23 +108,29 @@ class Item extends React.Component {
       return (
         <Fragment>
           <CardMedia
-            style={{ width: 200, height: 300, flex: "1" }}
+            style={{ width: 200, height: 300, flex: 1 }}
             image={(item.poster_path || item.profile_path) ? "https://image.tmdb.org/t/p/w500" + (item.poster_path || item.profile_path) : "#"}
             title={item.name}
           />
-          <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
-            <CardContent style={{ flex: "auto" }}>
-              <Typography gutterBottom variant="h6" component="h2">
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <CardContent style={{ flex: 9, overflow: "auto" }}>
+              <Typography variant="subtitle1">
                 {item.name || item.title}
               </Typography>
               <Typography>
-                { item.media_type === "person" ? "PERSON" :
-                  (item.first_air_date || item.release_date || "").split("-")[0]+" | "+item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
+                {item.media_type === "person" ? "PERSON" :
+                  (item.first_air_date || item.release_date || "").split("-")[0] + " | " + item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
+              </Typography>
+              <Typography>
+                {item.overview ? item.overview.slice(0, 70) + "..." : "No overview available."}
               </Typography>
             </CardContent>
-            <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
+            <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
               <Button size="small" onClick={this.onDetailsOpen}>
                 More Info
+              </Button>
+              <Button size="small" onClick={() => this.context.changeLanguage("pt")}>
+                {this.context.language}
               </Button>
             </CardActions>
           </div>
