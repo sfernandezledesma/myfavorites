@@ -11,17 +11,15 @@ class Item extends React.Component {
   }
 
   onDetailsOpen = () => {
-    const { imdbID } = this.props.item;
-    if (this.state.info.imdbID === imdbID) {
+    const { id, media_type } = this.props.item;
+    if (this.state.info.id === id) {
       this.setState({ detailsOpen: true });
     } else {
-      fetch(`/api/id/${imdbID}`)
+      fetch(`/api/id/${media_type}/${id}`)
         .then(response => response.json())
         .then(data => {
           console.log(data);
-          if (!data.Response) {
-            //this.setState({ errorMessage: data });
-          } else if (data.Response === "True") {
+          if (data.vote_count) {
             this.setState({ info: data, detailsOpen: true/*, errorMessage: ""*/ });
           } else {
             //this.setState({ errorMessage: data.Error });
@@ -43,16 +41,16 @@ class Item extends React.Component {
         <Fragment>
           <CardMedia
             style={{ width: 200, height: 300, flex: "1" }}
-            image={item.Poster !== "N/A" ? item.Poster : "#"}
-            title={item.Title}
+            image={item.poster_path ? "https://image.tmdb.org/t/p/w500" + item.poster_path : "#"}
+            title={item.name}
           />
           <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
             <CardContent style={{ flex: "auto" }}>
               <Typography gutterBottom variant="h6" component="h2">
-                {item.Title}
+                {item.name || item.title}
               </Typography>
               <Typography>
-                {item.Year} | {item.Type.toUpperCase()}
+                {(item.first_air_date || item.release_date || "").split("-")[0]} | {item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
               </Typography>
             </CardContent>
             <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
@@ -68,28 +66,19 @@ class Item extends React.Component {
         <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
           <CardContent style={{ flex: "auto" }}>
             <Typography variant="subtitle1">
-              {info.Title}
+              {info.name || info.title}
             </Typography>
             <Typography variant="subtitle1">
-              {info.Year} | {info.Type.toUpperCase() + (info.Type === "movie" ? " | " + info.Runtime : "")} | {info.Country}
+              {(info.first_air_date || info.release_date || "").split("-")[0]} | {item.media_type.toUpperCase() + (info.runtime ? " | " + info.runtime + " mins": "")}
             </Typography>
             <Typography>
-              {info.Genre}
+              {info.genres.map(genre => genre.name).join(", ")}
             </Typography>
             <Typography>
-              Directors: {info.Director}
+              TMDb Rating: {info.vote_average} | Votes: {info.vote_count}
             </Typography>
             <Typography>
-              Writers: {info.Writer}
-            </Typography>
-            <Typography gutterBottom>
-              Stars: {info.Actors}
-            </Typography>
-            <Typography>
-              IMDb Rating: {info.imdbRating}
-            </Typography>
-            <Typography>
-              {info.Plot}
+              {info.overview || ""}
             </Typography>
           </CardContent>
           <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>

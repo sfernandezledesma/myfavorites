@@ -15,26 +15,41 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/searchmovies/:title', (req, res) => {
   const title = req.params.title;
-  fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
+  fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=en-US&page=1&include_adult=false`)
+    .then(response => response.json())
+    .then(data => res.json(data))
+    .catch(err => res.status(400).json("Could not connect to TMDb API"));
+});
+app.get('/api/id/:media_type/:id', (req, res) => {
+  const { id, media_type } = req.params;
+  fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}`)
     .then(response => response.json())
     .then(data => res.json(data))
     .catch(err => res.status(400).json("Could not connect to OMDb API"));
 });
 
-app.get('/api/id/:id', (req, res) => {
-  const imdbID = req.params.id;
-  fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
-    .then(response => response.json())
-    .then(data => res.json(data))
-    .catch(err => res.status(400).json("Could not connect to OMDb API"));
-});
+// app.get('/api/searchmovies/:title', (req, res) => {
+//   const title = req.params.title;
+//   fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
+//     .then(response => response.json())
+//     .then(data => res.json(data))
+//     .catch(err => res.status(400).json("Could not connect to OMDb API"));
+// });
+
+// app.get('/api/id/:id', (req, res) => {
+//   const imdbID = req.params.id;
+//   fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
+//     .then(response => response.json())
+//     .then(data => res.json(data))
+//     .catch(err => res.status(400).json("Could not connect to OMDb API"));
+// });
 
 app.get("/users", (req, res) => {
   db.select().from("users")
-  .then(users => {
-    res.json(users);
-  })
-  .catch(err => res.status(400).json("Could not connect to database"));
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => res.status(400).json("Could not connect to database"));
 });
 
 // app.post('/api/world', (req, res) => {
