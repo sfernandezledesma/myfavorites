@@ -10,6 +10,10 @@ class ItemList extends React.Component {
     };
   }
 
+  // shouldComponentUpdate(newProps) {
+  //   return this.props.items !== newProps.items;
+  // }
+
   render() {
     const { spacing } = this.state;
     const { items } = this.props;

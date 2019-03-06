@@ -14,13 +14,14 @@ class Item extends React.Component {
   }
 
   componentDidMount() {
-    this.currentLanguage = this.context.language;
+    this.currentLanguage = this.context.languageCode;
   }
 
   componentDidUpdate() {
-    if (this.context.language !== this.currentLanguage) {
-      this.currentLanguage = this.context.language;
-      if (this.state.detailsOpen) {
+    console.log("Item did update");
+    if (this.context.languageCode !== this.currentLanguage) {
+      this.currentLanguage = this.context.languageCode;
+      if (this.state.info.id) {
         this.fetchDetails();
       }
     }
@@ -28,28 +29,28 @@ class Item extends React.Component {
 
   fetchDetails = () => {
     const { id, media_type } = this.props.item;
-    const { language } = this.context;
-    return fetch(`/api/id/${language}/${media_type}/${id}`)
+    const { languageCode } = this.context;
+    return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.id) {
-          this.setState({ info: data/*, errorMessage: ""*/ });
+          this.setState({ info: data });
         } else {
-          //this.setState({ errorMessage: data.Error });
+          this.context.showError(data.status_message);
         }
       })
-      .catch(err => this.setState({ errorMessage: err }));
+      .catch(err => this.context.showError("Error connecting with API"));
   }
 
   onDetailsOpen = async () => {
     const { id } = this.props.item;
     if (this.state.info.id === id) {
-      this.setState({ detailsOpen: true });
+      // No hace faltar hacer nada
     } else {
       await this.fetchDetails();
-      this.setState({ detailsOpen: true });
     }
+    this.setState({ detailsOpen: true });
   }
 
   onDetailsClose = () => {
@@ -129,8 +130,8 @@ class Item extends React.Component {
               <Button size="small" onClick={this.onDetailsOpen}>
                 More Info
               </Button>
-              <Button size="small" onClick={() => this.context.changeLanguage("pt")}>
-                {this.context.language}
+              <Button size="small" onClick={() => {this.context.showError("Jeje!")}}>
+                Add
               </Button>
             </CardActions>
           </div>

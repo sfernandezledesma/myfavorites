@@ -28,22 +28,6 @@ app.get('/api/id/:language/:media_type/:id', (req, res) => {
     .catch(err => res.status(400).json("Could not connect to TMDb API"));
 });
 
-// app.get('/api/searchmovies/:title', (req, res) => {
-//   const title = req.params.title;
-//   fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${title}`)
-//     .then(response => response.json())
-//     .then(data => res.json(data))
-//     .catch(err => res.status(400).json("Could not connect to OMDb API"));
-// });
-
-// app.get('/api/id/:id', (req, res) => {
-//   const imdbID = req.params.id;
-//   fetch(`https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${imdbID}&plot=full`)
-//     .then(response => response.json())
-//     .then(data => res.json(data))
-//     .catch(err => res.status(400).json("Could not connect to OMDb API"));
-// });
-
 app.get("/users", (req, res) => {
   db.select().from("users")
     .then(users => {
@@ -51,13 +35,6 @@ app.get("/users", (req, res) => {
     })
     .catch(err => res.status(400).json("Could not connect to database"));
 });
-
-// app.post('/api/world', (req, res) => {
-//   console.log(req.body);
-//   res.send(
-//     `I received your POST request. This is what you sent me: ${req.body.post}`,
-//   );
-// });
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
