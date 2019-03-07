@@ -20,4 +20,4 @@ const connectDB = (knex) => {
   );
 };
 
-module.exports = { connectDB };
+module.exports = connectDB;

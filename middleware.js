@@ -3,10 +3,10 @@ const config = require('./config.js');
 
 const checkToken = (req, res, next) => {
   let token =
-    req.headers['x-access-token'] ||
+    req.headers['x-access-token'] || // Express headers are auto converted to lowercase
     req.headers['authorization'] ||
     req.body.token ||
-    req.cookies.token; // Express headers are auto converted to lowercase
+    req.cookies.token;
   
   if (token) {
     if (token.startsWith('Bearer ')) {
@@ -32,6 +32,4 @@ const checkToken = (req, res, next) => {
   }
 };
 
-module.exports = {
-  checkToken: checkToken
-};
+module.exports = checkToken;

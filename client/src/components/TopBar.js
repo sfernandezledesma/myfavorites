@@ -13,7 +13,7 @@ const TopBar = (props) => {
       <Toolbar>
         <Typography variant="subtitle1" color="inherit">
           <AppContext.Consumer>
-            {context => "Hi, " + context.username || "MyFavorites"}
+            {context => context.loggedIn ? "Hi, " + context.username : "MyFavorites"}
           </AppContext.Consumer>
         </Typography>
         <MenuLanguage />

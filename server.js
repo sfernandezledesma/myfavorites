@@ -6,27 +6,28 @@ const path = require('path');
 const fetch = require('node-fetch');
 const bcrypt = require('bcrypt-nodejs');
 const knex = require('knex');
-const db = require('./connectDB.js').connectDB(knex);
+const db = require('./connectDB.js')(knex);
 const app = express();
 const port = process.env.PORT || 5000;
 const jwt = require('jsonwebtoken');
 const config = require('./config');
-const middleware = require('./middleware');
+const checkToken = require('./middleware');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 function login(req, res) {
-  let username = req.body.username;
+  let email = req.body.email;
   let password = req.body.password;
   // For the given username fetch user from DB
+  let mockedEmail = 'admin@gmail.com';
   let mockedUsername = 'admin';
   let mockedPassword = 'password';
 
-  if (username && password) {
-    if (username === mockedUsername && password === mockedPassword) {
-      let token = jwt.sign({ username: username },
+  if (email && password) {
+    if (email === mockedEmail && password === mockedPassword) {
+      let token = jwt.sign({ email: email, username: mockedUsername },
         config.secret,
         {
           expiresIn: '24h' // expires in 24 hours
@@ -37,6 +38,7 @@ function login(req, res) {
       res.status(200).json({
           success: true,
           message: 'Authentication successful!',
+          username: mockedUsername
         });
     } else {
       res.status(403).json({
@@ -56,7 +58,7 @@ app.post("/login", (req, res) => {
   login(req, res);
 });
 
-app.get("/getmein", middleware.checkToken, (req, res) => {
+app.get("/getmein", checkToken, (req, res) => {
   res.json({
     success: true,
     username: req.decoded.username

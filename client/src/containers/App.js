@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { AppContext } from "./AppContext";
 import Search from './Search';
 import ErrorDialog from '../components/ErrorDialog';
-import { Button } from '@material-ui/core';
+import SignIn from '../components/SignIn';
+import TopBar from '../components/TopBar';
 
 class App extends Component {
   constructor(props) {
@@ -31,8 +32,9 @@ class App extends Component {
     this.setState({ errorOpen: false });
   }
 
-  login = () => {
-    const body = { username: "admin", password: "password" };
+  handleSignInSubmit = (event) => {
+    event.preventDefault();
+    const body = { email: event.target.email.value, password: event.target.password.value };
     fetch("/login", {
       method: 'post',
       body: JSON.stringify(body),
@@ -41,10 +43,10 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          this.setState({ loggedIn: true, username: body.username });
+          this.setState({ loggedIn: true, username: data.username });
         }
       });
-  }
+  };
 
   renderMainComponent = () => {
     if (this.state.firstTime) {
@@ -61,7 +63,13 @@ class App extends Component {
     } else if (this.state.loggedIn) {
       return <Search />;
     } else {
-      return <Button style={{ textAlign: "center" }} onClick={this.login}>Log in</Button>;
+      //return <Button style={{ textAlign: "center" }} onClick={this.login}>Log in</Button>;
+      return (
+        <Fragment>
+          <TopBar />
+          <SignIn handleSignInSubmit={this.handleSignInSubmit} />
+        </Fragment>
+      );
     }
 
   };
