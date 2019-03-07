@@ -41,7 +41,7 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          this.setState({ loggedIn: true })
+          this.setState({ loggedIn: true, username: body.username });
         }
       });
   }
@@ -52,7 +52,7 @@ class App extends Component {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            this.setState({ firstTime: false, loggedIn: true })
+            this.setState({ firstTime: false, loggedIn: true, username: data.username })
           } else {
             this.setState({ firstTime: false })
           }

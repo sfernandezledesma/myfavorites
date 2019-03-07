@@ -1,5 +1,10 @@
 import React from 'react';
 
 export const AppContext = React.createContext({
-  languageCode: "en"
+  firstTime: true,
+      loggedIn: false,
+      username: "",
+      languageCode: "en",
+      errorOpen: false,
+      errorDescription: ""
 });
