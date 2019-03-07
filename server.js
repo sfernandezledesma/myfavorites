@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const fetch = require('node-fetch');
 const bcrypt = require('bcrypt-nodejs');
@@ -14,6 +15,7 @@ const middleware = require('./middleware');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 function login(req, res) {
   let username = req.body.username;
@@ -31,19 +33,19 @@ function login(req, res) {
         }
       );
       // return the JWT token for the future API calls
-      res.json({
-        success: true,
-        message: 'Authentication successful!',
-        token: token
-      });
+      res.cookie('token', token, { httpOnly: true });
+      res.status(200).json({
+          success: true,
+          message: 'Authentication successful!',
+        });
     } else {
-      res.send(403).json({
+      res.status(403).json({
         success: false,
         message: 'Incorrect username or password'
       });
     }
   } else {
-    res.send(400).json({
+    res.status(400).json({
       success: false,
       message: 'Authentication failed! Please check the request'
     });
@@ -57,7 +59,7 @@ app.post("/login", (req, res) => {
 app.get("/getmein", middleware.checkToken, (req, res) => {
   res.json({
     success: true,
-    message: 'You are logged in, ' + req.decoded.username
+    username: req.decoded.username
   });
 });
 

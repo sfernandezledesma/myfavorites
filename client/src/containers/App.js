@@ -2,11 +2,15 @@ import React, { Component } from 'react';
 import { AppContext } from "./AppContext";
 import Search from './Search';
 import ErrorDialog from '../components/ErrorDialog';
+import { Button } from '@material-ui/core';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      firstTime: true,
+      loggedIn: false,
+      username: "",
       changeLanguage: this.changeLanguage,
       showError: this.showError,
       languageCode: "en",
@@ -27,8 +31,39 @@ class App extends Component {
     this.setState({ errorOpen: false });
   }
 
+  login = () => {
+    const body = { username: "admin", password: "password" };
+    fetch("/login", {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          this.setState({ loggedIn: true })
+        }
+      });
+  }
+
   renderMainComponent = () => {
-    return <Search />;
+    if (this.state.firstTime) {
+      fetch("/getmein")
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.setState({ firstTime: false, loggedIn: true })
+          } else {
+            this.setState({ firstTime: false })
+          }
+        });
+      return null;
+    } else if (this.state.loggedIn) {
+      return <Search />;
+    } else {
+      return <Button style={{ textAlign: "center" }} onClick={this.login}>Log in</Button>;
+    }
+
   };
 
   render() {
