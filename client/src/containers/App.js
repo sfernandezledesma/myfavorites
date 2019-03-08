@@ -4,12 +4,13 @@ import Search from './Search';
 import ErrorDialog from '../components/ErrorDialog';
 import SignIn from '../components/SignIn';
 import TopBar from '../components/TopBar';
+import Register from '../components/Register';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstTime: true,
+      route: "firstTime",
       loggedIn: false,
       username: "",
       changeLanguage: this.changeLanguage,
@@ -18,6 +19,10 @@ class App extends Component {
       errorOpen: false,
       errorDescription: ""
     };
+  }
+
+  changeRoute = (newRoute) => {
+    this.setState({route: newRoute}, () => console.log("Changed route to", newRoute));
   }
 
   changeLanguage = (languageCode) => {
@@ -43,35 +48,70 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          this.setState({ loggedIn: true, username: data.username });
+          this.login(data.username);
+        }
+      });
+  };
+
+  login = (username) => {
+    this.setState({loggedIn: true, route: "search", username: username});
+  }
+
+  handleRegister = (event) => {
+    event.preventDefault();
+    const body = { 
+      username: event.target.username.value,
+      email: event.target.email.value, 
+      password: event.target.password.value };
+    fetch("/register", {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          this.login(data.username);
         }
       });
   };
 
   renderMainComponent = () => {
-    if (this.state.firstTime) {
-      fetch("/getmein")
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            this.setState({ firstTime: false, loggedIn: true, username: data.username })
-          } else {
-            this.setState({ firstTime: false })
-          }
-        });
-      return null;
-    } else if (this.state.loggedIn) {
-      return <Search />;
-    } else {
-      //return <Button style={{ textAlign: "center" }} onClick={this.login}>Log in</Button>;
-      return (
-        <Fragment>
-          <TopBar />
-          <SignIn handleSignInSubmit={this.handleSignInSubmit} />
-        </Fragment>
-      );
+    const { route } = this.state;
+    switch (route) {
+      case "firstTime": {
+        fetch("/getmein")
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              this.setState({ route: "search", loggedIn: true, username: data.username });
+            } else {
+              this.setState({ route: "signin", });
+            }
+          });
+        return null;
+      }
+      case "search": {
+        return <Search />;
+      }
+      case "register": {
+        return (
+          <Fragment>
+            <TopBar />
+            <Register handleRegister={this.handleRegister} />
+          </Fragment>
+        );
+      }
+      case "signin":
+      default: {
+        return (
+          <Fragment>
+            <TopBar />
+            <SignIn handleSignInSubmit={this.handleSignInSubmit} changeRoute={this.changeRoute} />
+          </Fragment>
+        );
+      }
     }
-
   };
 
   render() {

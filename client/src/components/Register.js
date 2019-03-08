@@ -43,39 +43,36 @@ const styles = theme => ({
 });
 
 function SignIn(props) {
-  const { classes, handleSignInSubmit, changeRoute } = props;
+  const { classes, handleRegister } = props;
 
   return (
-    <main className={classes.main} onSubmit={handleSignInSubmit}>
+    <main className={classes.main} onSubmit={handleRegister}>
       <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Register
         </Typography>
         <form className={classes.form}>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" type="email" name="email" autoComplete="email" autoFocus />
+            <Input id="email" type="email" name="email" autoFocus />
+          </FormControl>
+          <FormControl margin="normal" required fullWidth>
+            <InputLabel htmlFor="username">Name</InputLabel>
+            <Input id="username" type="text" name="username" autoFocus />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" />
+            <Input name="password" type="password" id="password" />
           </FormControl>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             className={classes.submit}
-          >
-            Sign in
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-            onClick={() => changeRoute("register")}
+            onSubmit={(event) => event.preventDefault()}
           >
             Register
           </Button>

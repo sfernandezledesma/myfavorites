@@ -17,46 +17,83 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-function login(req, res) {
-  let email = req.body.email;
-  let password = req.body.password;
-  // For the given username fetch user from DB
-  let mockedEmail = 'admin@gmail.com';
-  let mockedUsername = 'admin';
-  let mockedPassword = 'password';
+const login = (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
   if (email && password) {
-    if (email === mockedEmail && password === mockedPassword) {
-      let token = jwt.sign({ email: email, username: mockedUsername },
-        config.secret,
-        {
-          expiresIn: '24h' // expires in 24 hours
+    db.select("password_hash", "username").from("users").where("email", email)
+      .then(results => {
+        if (!results[0]) {
+          return res.status(400).json({
+            success: false,
+            message: "No user found with that email"
+          });
         }
-      );
-      // return the JWT token for the future API calls
-      res.cookie('token', token, { httpOnly: true });
-      res.status(200).json({
-          success: true,
-          message: 'Authentication successful!',
-          username: mockedUsername
+        const username = results[0].username;
+        const password_hash = results[0].password_hash;
+        if (bcrypt.compareSync(password, password_hash)) {
+          const token = jwt.sign({ email: email, username: username }, config.secret, { expiresIn: '24h' });
+          res.cookie('token', token, { httpOnly: true });
+          res.status(200).json({
+            success: true,
+            message: 'Authentication successful!',
+            username: username
+          });
+        } else {
+          res.status(403).json({
+            success: false,
+            message: 'Incorrect username or password'
+          });
+        }
+      })
+      .catch(err => {
+        res.status(400).json({
+          success: false,
+          message: 'Error connecting to database'
         });
-    } else {
-      res.status(403).json({
-        success: false,
-        message: 'Incorrect username or password'
       });
-    }
   } else {
     res.status(400).json({
       success: false,
       message: 'Authentication failed! Please check the request'
     });
   }
-}
+};
 
-app.post("/login", (req, res) => {
-  login(req, res);
-});
+const register = (req, res) => {
+  const { email, username, password } = req.body;
+  if (!email || !username || !password) {
+    res.status(400).json("One of the items is blank.");
+  } else {
+    const password_hash = bcrypt.hashSync(password);
+    db.insert({
+      email: email,
+      username: username,
+      password_hash: password_hash,
+      joined: new Date()
+    }).into("users")
+      .returning("username")
+      .then(registeredUsername => {
+        const token = jwt.sign({ email: email, username: registeredUsername[0] },
+          config.secret, { expiresIn: '24h' });
+        res.cookie('token', token, { httpOnly: true });
+        res.json({
+          success: true,
+          message: "User registered succesfully",
+          username: registeredUsername[0]
+        });
+      })
+      .catch(err => res.status(400).json({
+        success: false,
+        message: 'Unable to register'
+      }));
+  }
+};
+
+app.post("/register", register);
+
+app.post("/login", login);
 
 app.get("/getmein", checkToken, (req, res) => {
   res.json({
