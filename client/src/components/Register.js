@@ -42,7 +42,7 @@ const styles = theme => ({
   },
 });
 
-function SignIn(props) {
+const Register = (props) => {
   const { classes, handleRegister } = props;
 
   return (
@@ -80,10 +80,10 @@ function SignIn(props) {
       </Paper>
     </main>
   );
-}
+};
 
-SignIn.propTypes = {
+Register.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(Register);

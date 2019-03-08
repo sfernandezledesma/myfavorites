@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { AppContext } from "./AppContext";
 import Search from './Search';
-import ErrorDialog from '../components/ErrorDialog';
-import SignIn from '../components/SignIn';
-import TopBar from '../components/TopBar';
-import Register from '../components/Register';
+import ErrorDialog from './ErrorDialog';
+import SignIn from './SignIn';
+import TopBar from './TopBar';
+import Register from './Register';
 
 class App extends Component {
   constructor(props) {

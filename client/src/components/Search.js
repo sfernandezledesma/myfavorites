@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import ItemList from "./ItemList";
-import SearchTopBar from '../components/SearchTopBar';
+import SearchTopBar from './SearchTopBar';
 import { AppContext } from './AppContext';
 
 /* const mockResults = [
@@ -446,7 +446,6 @@ class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      errorMessage: "",
       lastSearch: "",
       searchResults: [],
     };
@@ -457,7 +456,6 @@ class Search extends Component {
   }
 
   componentDidUpdate() {
-    console.log("Search Container did update");
     if (this.context.languageCode !== this.currentLanguage) {
       this.currentLanguage = this.context.languageCode;
       if (this.state.lastSearch) {
@@ -481,6 +479,7 @@ class Search extends Component {
   }
 
   render() {
+    console.log("Search Component rendered");
     return (
       <Fragment>
         <SearchTopBar onSearch={this.onSearch} />

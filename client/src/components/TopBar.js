@@ -2,9 +2,8 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import MenuLanguage from "../containers/MenuLanguage";
-import { AppContext } from '../containers/AppContext';
-
+import MenuLanguage from "./MenuLanguage";
+import { AppContext } from './AppContext';
 
 const TopBar = (props) => {
   console.log("TopBar rendered");

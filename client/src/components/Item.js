@@ -1,8 +1,8 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { AppContext } from "./AppContext";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
-class Item extends React.Component {
+class Item extends PureComponent {
   static contextType = AppContext;
 
   constructor(props) {
@@ -18,7 +18,6 @@ class Item extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log("Item did update");
     if (this.context.languageCode !== this.currentLanguage) {
       this.currentLanguage = this.context.languageCode;
       if (this.state.info.id) {
@@ -104,6 +103,7 @@ class Item extends React.Component {
   }
 
   render() {
+    console.log("Item rendered");
     const { item } = this.props;
     if (!this.state.detailsOpen) {
       return (

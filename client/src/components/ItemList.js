@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Grid, Card } from "@material-ui/core";
 import Item from "./Item";
 
-class ItemList extends React.Component {
+class ItemList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

@@ -42,7 +42,7 @@ const styles = theme => ({
   },
 });
 
-function SignIn(props) {
+const SignIn = (props) => {
   const { classes, handleSignInSubmit, changeRoute } = props;
 
   return (
@@ -83,7 +83,7 @@ function SignIn(props) {
       </Paper>
     </main>
   );
-}
+};
 
 SignIn.propTypes = {
   classes: PropTypes.object.isRequired,

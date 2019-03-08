@@ -17,7 +17,7 @@ const checkToken = (req, res, next) => {
       if (err) {
         return res.json({
           success: false,
-          message: 'Token is not valid'
+          status_message: 'Token is not valid'
         });
       } else {
         req.decoded = decoded;
@@ -27,7 +27,7 @@ const checkToken = (req, res, next) => {
   } else {
     return res.json({
       success: false,
-      message: 'Auth token is not supplied'
+      status_message: 'Auth token is not supplied'
     });
   }
 };

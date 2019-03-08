@@ -27,7 +27,7 @@ const login = (req, res) => {
         if (!results[0]) {
           return res.status(400).json({
             success: false,
-            message: "No user found with that email"
+            status_message: "No user found with that email"
           });
         }
         const username = results[0].username;
@@ -37,26 +37,26 @@ const login = (req, res) => {
           res.cookie('token', token, { httpOnly: true });
           res.status(200).json({
             success: true,
-            message: 'Authentication successful!',
+            status_message: 'Authentication successful!',
             username: username
           });
         } else {
           res.status(403).json({
             success: false,
-            message: 'Incorrect username or password'
+            status_message: 'Incorrect username or password'
           });
         }
       })
       .catch(err => {
         res.status(400).json({
           success: false,
-          message: 'Error connecting to database'
+          status_message: 'Error connecting to database'
         });
       });
   } else {
     res.status(400).json({
       success: false,
-      message: 'Authentication failed! Please check the request'
+      status_message: 'Authentication failed! Please check the request'
     });
   }
 };
@@ -80,13 +80,13 @@ const register = (req, res) => {
         res.cookie('token', token, { httpOnly: true });
         res.json({
           success: true,
-          message: "User registered succesfully",
+          status_message: "User registered succesfully",
           username: registeredUsername[0]
         });
       })
       .catch(err => res.status(400).json({
         success: false,
-        message: 'Unable to register'
+        status_message: 'Unable to register'
       }));
   }
 };
@@ -107,14 +107,14 @@ app.get('/api/search/:language/:title', (req, res) => {
   fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=${language}&page=1&include_adult=false`)
     .then(response => response.json())
     .then(data => res.json(data))
-    .catch(err => res.status(400).json("Could not connect to TMDb API"));
+    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to TMDb API"}));
 });
 app.get('/api/id/:language/:media_type/:id', (req, res) => {
   const { language, media_type, id } = req.params;
   fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=${language}`)
     .then(response => response.json())
     .then(data => res.json(data))
-    .catch(err => res.status(400).json("Could not connect to TMDb API"));
+    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to TMDb API"}));
 });
 
 app.get("/users", (req, res) => {
@@ -122,7 +122,7 @@ app.get("/users", (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.status(400).json("Could not connect to database"));
+    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to the"}));
 });
 
 if (process.env.NODE_ENV === 'production') {
