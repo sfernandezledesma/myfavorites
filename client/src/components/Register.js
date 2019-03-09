@@ -72,7 +72,6 @@ const Register = (props) => {
             fullWidth
             variant="contained"
             className={classes.submit}
-            onSubmit={(event) => event.preventDefault()}
           >
             Register
           </Button>

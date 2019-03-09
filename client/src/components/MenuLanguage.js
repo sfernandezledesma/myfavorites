@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState, memo } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
 import { AppContext } from './AppContext';
@@ -9,58 +9,52 @@ const options = [
   { name: "Svenska", code: "sv" }
 ];
 
-class MenuLanguage extends React.Component {
-  static contextType = AppContext;
+const MenuLanguage = memo((props) => {
+  const context = useContext(AppContext);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      anchorEl: null,
-      selectedIndex: 0
-    };
-  }
-
-  handleClickButton = event => {
-    this.setState({ anchorEl: event.currentTarget });
+  const handleClickButton = event => {
+    setAnchorEl(event.currentTarget);
   };
 
-  handleMenuItemClick = (event, index) => {
-    if (index !== this.state.selectedIndex) {
-      this.setState({ selectedIndex: index, anchorEl: null });
-      this.context.changeLanguage(options[index].code);
+  const handleMenuItemClick = (event, index) => {
+    if (index !== selectedIndex) {
+      setSelectedIndex(index);
+      setAnchorEl(null);
+      context.changeLanguage(options[index].code);
     }
   };
 
-  handleClose = () => {
-    this.setState({ anchorEl: null });
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  render() {
-    const { anchorEl } = this.state;
-    return (
-      <div>
-        <Button onClick={this.handleClickButton}>
-          <LanguageIcon /> {options[this.state.selectedIndex].code}
-        </Button>
-        <Menu
-          id="lock-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={this.handleClose}
-        >
-          {options.map((option, index) => (
-            <MenuItem
-              key={option.code}
-              selected={index === this.state.selectedIndex}
-              onClick={event => this.handleMenuItemClick(event, index)}
-            >
-              {option.name}
-            </MenuItem>
-          ))}
-        </Menu>
-      </div>
-    );
-  }
-}
+  console.log("MenuLanguage rendered");
+
+  return (
+    <div>
+      <Button onClick={handleClickButton}>
+        <LanguageIcon /> {options[selectedIndex].code}
+      </Button>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {options.map((option, index) => (
+          <MenuItem
+            key={option.code}
+            selected={index === selectedIndex}
+            onClick={event => handleMenuItemClick(event, index)}
+          >
+            {option.name}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  );
+});
 
 export default MenuLanguage;

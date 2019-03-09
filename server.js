@@ -122,7 +122,7 @@ app.get("/users", (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to the"}));
+    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to database"}));
 });
 
 if (process.env.NODE_ENV === 'production') {
