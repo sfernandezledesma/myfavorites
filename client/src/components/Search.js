@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
 import { AppContext } from './AppContext';
@@ -439,7 +439,7 @@ import { AppContext } from './AppContext';
     ]
   }];*/
 
-class Search extends Component {
+class Search extends PureComponent {
   
   static contextType = AppContext;
   

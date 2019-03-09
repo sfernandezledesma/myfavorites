@@ -1,64 +1,50 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
 import { AppContext } from "./AppContext";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
-class Item extends PureComponent {
-  static contextType = AppContext;
+const Item = memo(function Item(props) {
+  const context = useContext(AppContext);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [info, setInfo] = useState({});
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      detailsOpen: false,
-      info: {}
-    };
-  }
-
-  componentDidMount() {
-    this.currentLanguage = this.context.languageCode;
-  }
-
-  componentDidUpdate() {
-    if (this.context.languageCode !== this.currentLanguage) {
-      this.currentLanguage = this.context.languageCode;
-      if (this.state.info.id) {
-        this.fetchDetails();
-      }
+  useEffect(() => {
+    if (info.id) {
+      console.log("Item info re-fetched");
+      fetchDetails();
     }
-  }
+  }, [context.languageCode]);
 
-  fetchDetails = () => {
-    const { id, media_type } = this.props.item;
-    const { languageCode } = this.context;
-    return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
+  function fetchDetails() {
+    const { id, media_type } = props.item;
+    return fetch(`/api/id/${context.languageCode}/${media_type}/${id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.id) {
-          this.setState({ info: data });
+          setInfo(data);
         } else {
-          this.context.showError(data.status_message);
+          context.showError(data.status_message);
         }
       })
-      .catch(err => this.context.showError("Error connecting with API"));
+      .catch(err => context.showError("Error connecting with API"));
   }
 
-  onDetailsOpen = async () => {
-    const { id } = this.props.item;
-    if (this.state.info.id === id) {
+  async function onDetailsOpen() {
+    const { id } = props.item;
+    if (info.id === id) {
       // No hace faltar hacer nada
     } else {
-      await this.fetchDetails();
+      await fetchDetails();
     }
-    this.setState({ detailsOpen: true });
+    setDetailsOpen(true);
   }
 
-  onDetailsClose = () => {
-    this.setState({ detailsOpen: false });
+  function onDetailsClose() {
+    setDetailsOpen(false);
   }
 
-  renderDetailsCardContent = () => {
-    const { item } = this.props;
-    const { info } = this.state;
+  function renderDetailsCardContent() {
+    const { item } = props;
     if (item.media_type === "person") {
       return (
         <Fragment>
@@ -102,54 +88,56 @@ class Item extends PureComponent {
     }
   }
 
-  render() {
-    console.log("Item rendered");
-    const { item } = this.props;
-    if (!this.state.detailsOpen) {
-      return (
-        <Fragment>
-          <CardMedia
-            style={{ width: 200, height: 300, flex: 1 }}
-            image={(item.poster_path || item.profile_path) ? "https://image.tmdb.org/t/p/w500" + (item.poster_path || item.profile_path) : "#"}
-            title={item.name}
-          />
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <CardContent style={{ flex: 9, overflow: "auto" }}>
-              <Typography variant="subtitle1">
-                {item.name || item.title}
-              </Typography>
-              <Typography>
-                {item.media_type === "person" ? "PERSON" :
-                  (item.first_air_date || item.release_date || "").split("-")[0] + " | " + item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
-              </Typography>
-              <Typography>
-                {item.overview ? item.overview.slice(0, 70) + "..." : "No overview available."}
-              </Typography>
-            </CardContent>
-            <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
-              <Button size="small" onClick={this.onDetailsOpen}>
-                More Info
-              </Button>
-              <Button size="small" onClick={() => {this.context.showError("Jeje!")}}>
-                Add
-              </Button>
-            </CardActions>
-          </div>
-        </Fragment>
-      );
-    } else {
-      return (
-        <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
-          <CardContent style={{ flex: "auto" }}>
-            {this.renderDetailsCardContent()}
+  function onAdd() {
+    context.showError("Jeje!");
+  }
+
+  console.log("Item rendered");
+  const { item } = props;
+  if (!detailsOpen) {
+    return (
+      <Fragment>
+        <CardMedia
+          style={{ width: 200, height: 300, flex: 1 }}
+          image={(item.poster_path || item.profile_path) ? "https://image.tmdb.org/t/p/w500" + (item.poster_path || item.profile_path) : "#"}
+          title={item.name}
+        />
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <CardContent style={{ flex: 9, overflow: "auto" }}>
+            <Typography variant="subtitle1">
+              {item.name || item.title}
+            </Typography>
+            <Typography>
+              {item.media_type === "person" ? "PERSON" :
+                (item.first_air_date || item.release_date || "").split("-")[0] + " | " + item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
+            </Typography>
+            <Typography>
+              {item.overview ? item.overview.slice(0, 70) + "..." : "No overview available."}
+            </Typography>
           </CardContent>
-          <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
-            <Button size="small" onClick={this.onDetailsClose}>Back</Button>
+          <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
+            <Button size="small" onClick={onDetailsOpen}>
+              More Info
+              </Button>
+            <Button size="small" onClick={onAdd}>
+              Add
+              </Button>
           </CardActions>
         </div>
-      );
-    }
+      </Fragment>
+    );
+  } else {
+    return (
+      <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
+        <CardContent style={{ flex: "auto" }}>
+          {renderDetailsCardContent()}
+        </CardContent>
+        <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
+          <Button size="small" onClick={onDetailsClose}>Back</Button>
+        </CardActions>
+      </div>
+    );
   }
-}
+});
 
 export default Item;
