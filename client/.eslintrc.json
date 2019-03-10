@@ -1,18 +1,8 @@
 {
-    "env": {
-        "browser": true
-        ,"node": true
-    },
-    "extends": [
-        "react-app"
-    ],
+    "extends": "react-app",
     "plugins": [
         "react-hooks"
     ],
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
     "rules": {
         "indent": [
             "off",

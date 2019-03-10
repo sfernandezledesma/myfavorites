@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
 import { AppContext } from './AppContext';
@@ -439,54 +439,39 @@ import { AppContext } from './AppContext';
     ]
   }];*/
 
-class Search extends PureComponent {
-  
-  static contextType = AppContext;
-  
-  constructor(props) {
-    super(props);
-    this.state = {
-      lastSearch: "",
-      searchResults: [],
-    };
-  }
+function Search(props) {
+  const context = useContext(AppContext);
+  const [lastSearch, setLastSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
-  componentDidMount() {
-    this.currentLanguage = this.context.languageCode;
-  }
-
-  componentDidUpdate() {
-    if (this.context.languageCode !== this.currentLanguage) {
-      this.currentLanguage = this.context.languageCode;
-      if (this.state.lastSearch) {
-        this.onSearch(this.state.lastSearch);
-      }
+  useEffect(() => {
+    if (lastSearch) {
+      onSearch(lastSearch);
     }
-  }
+  }, [context.languageCode]);
 
-  onSearch = (searchTerm) => {
-    fetch(`/api/search/${this.context.languageCode}/${searchTerm}`)
+  function onSearch(searchTerm) {
+    fetch(`/api/search/${context.languageCode}/${searchTerm}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.page) {
-          this.setState({ lastSearch: searchTerm, searchResults: data.results, errorMessage: "" });
+          setLastSearch(searchTerm);
+          setSearchResults(data.results);
         } else {
-          this.context.showError(data.status_message);
+          context.showError(data.status_message);
         }
       })
-      .catch(err => this.context.showError("Error connecting with API"));
+      .catch(err => context.showError("Error connecting with API"));
   }
 
-  render() {
-    console.log("Search Component rendered");
-    return (
-      <Fragment>
-        <SearchTopBar onSearch={this.onSearch} />
-        <ItemList items={this.state.searchResults} />
-      </Fragment>
-    );
-  }
+  console.log("Search Component rendered");
+  return (
+    <Fragment>
+      <SearchTopBar onSearch={onSearch} />
+      <ItemList items={searchResults} />
+    </Fragment>
+  );
 }
 
 export default Search;
