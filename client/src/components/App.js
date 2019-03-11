@@ -1,4 +1,4 @@
-import React, { Fragment, useReducer } from 'react';
+import React, { Fragment, useReducer, useEffect } from 'react';
 import { AppContext, AppDispatch } from "./AppContext";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
@@ -10,12 +10,28 @@ import { reducer } from '../reducer';
 function App(props) {
   const [state, dispatch] = useReducer(reducer, {
     route: "firstTime",
-    loggedIn: false,
+    loginStatus: "loggedOut",
     username: "",
     languageCode: "en",
     errorOpen: false,
     errorDescription: ""
   });
+
+  useEffect(() => {
+    if (state.loginStatus === "loggingOut") {
+      fetch("/logout")
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log("Successfully logged out.");
+          dispatch({type: "loggedOut"});
+        } else {
+          dispatch({type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again."});
+        }
+      })
+      .catch(err => dispatch({type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again."}));
+    }
+  }, [state.loginStatus]);
 
   function onErrorClose() {
     dispatch({ type: "closeErrorDialog" });
@@ -39,22 +55,26 @@ function App(props) {
 
   function handleRegister(event) {
     event.preventDefault();
-    const body = {
-      username: event.target.username.value,
-      email: event.target.email.value,
-      password: event.target.password.value
-    };
-    fetch("/register", {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          dispatch({ type: "login", username: data.username });
-        }
-      });
+    if (event.target.password.value !== event.target.repeat_pass.value) {
+      dispatch({type:"showError", errorDescription: "Passwords don't match."});
+    } else {
+      const body = {
+        username: event.target.username.value,
+        email: event.target.email.value,
+        password: event.target.password.value
+      };
+      fetch("/register", {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            dispatch({ type: "login", username: data.username });
+          }
+        });
+    }
   };
 
   function renderMainComponent() {

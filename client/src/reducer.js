@@ -24,9 +24,23 @@ export function reducer(state, action) {
     case "login":
       return {
         ...state,
-        loggedIn: true,
+        loginStatus: "loggedIn",
         route: "search",
         username: action.username
+      };
+    case "logout":
+      return {
+        ...state,
+        loginStatus: "loggingOut",
+        route: "signin",
+        username: ""
+      };
+    case "loggedOut":
+      return {
+        ...state,
+        loginStatus: "loggedOut",
+        route: "signin",
+        username: ""
       };
     default:
       return state;

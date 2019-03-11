@@ -17,6 +17,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const logout = (req, res) => {
+  res.cookie('token', "", { httpOnly: true });
+  res.status(200).json({
+    success: true,
+    status_message: 'Authentication token cleaned',
+  });
+};
+
 const login = (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -90,6 +98,8 @@ const register = (req, res) => {
       }));
   }
 };
+
+app.get("/logout", logout);
 
 app.post("/register", register);
 

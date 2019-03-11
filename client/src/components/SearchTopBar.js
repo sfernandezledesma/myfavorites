@@ -17,6 +17,7 @@ const SearchTopBar = memo((props) => {
         placeholder="Search…"
         // onChange={onType}
         onKeyPress={onKeyPress}
+        fullWidth
       />
     </TopBar>
   );

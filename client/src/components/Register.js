@@ -1,11 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -48,24 +45,25 @@ const Register = (props) => {
   return (
     <main className={classes.main} onSubmit={handleRegister}>
       <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
         <Typography component="h1" variant="h5">
           Register
         </Typography>
         <form className={classes.form}>
           <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" type="email" name="email" autoFocus />
+            <InputLabel htmlFor="username">Name</InputLabel>
+            <Input id="username" type="text" name="username" autoFocus autoComplete="off" />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="username">Name</InputLabel>
-            <Input id="username" type="text" name="username" autoFocus />
+            <InputLabel htmlFor="email">Email Address</InputLabel>
+            <Input id="email" type="email" name="email" autoFocus autoComplete="off" />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" />
+            <Input name="password" type="password" id="password" autoComplete="new-password" />
+          </FormControl>
+          <FormControl margin="normal" required fullWidth>
+            <InputLabel htmlFor="repeat_pass">Repeat Password</InputLabel>
+            <Input name="repeat_pass" type="password" id="repeat_pass" autoComplete="new-password" />
           </FormControl>
           <Button
             type="submit"
@@ -73,16 +71,12 @@ const Register = (props) => {
             variant="contained"
             className={classes.submit}
           >
-            Register
+            Submit
           </Button>
         </form>
       </Paper>
     </main>
   );
-};
-
-Register.propTypes = {
-  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Register);
