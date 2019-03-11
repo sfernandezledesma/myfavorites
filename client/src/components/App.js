@@ -1,43 +1,27 @@
-import React, { Component, Fragment } from 'react';
-import { AppContext } from "./AppContext";
+import React, { Fragment, useReducer } from 'react';
+import { AppContext, AppDispatch } from "./AppContext";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
 import TopBar from './TopBar';
 import Register from './Register';
+import { reducer } from '../reducer';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      route: "firstTime",
-      loggedIn: false,
-      username: "",
-      changeLanguage: this.changeLanguage,
-      showError: this.showError,
-      languageCode: "en",
-      errorOpen: false,
-      errorDescription: ""
-    };
+function App(props) {
+  const [state, dispatch] = useReducer(reducer, {
+    route: "firstTime",
+    loggedIn: false,
+    username: "",
+    languageCode: "en",
+    errorOpen: false,
+    errorDescription: ""
+  });
+
+  function onErrorClose() {
+    dispatch({ type: "closeErrorDialog" });
   }
 
-  changeRoute = (newRoute) => {
-    this.setState({route: newRoute}, () => console.log("Changed route to", newRoute));
-  }
-
-  changeLanguage = (languageCode) => {
-    this.setState({ languageCode: languageCode });
-  };
-
-  showError = (errorDescription) => {
-    this.setState({ errorOpen: true, errorDescription: errorDescription });
-  };
-
-  onErrorClose = () => {
-    this.setState({ errorOpen: false });
-  }
-
-  handleSignInSubmit = (event) => {
+  function handleSignInSubmit(event) {
     event.preventDefault();
     const body = { email: event.target.email.value, password: event.target.password.value };
     fetch("/login", {
@@ -48,21 +32,18 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          this.login(data.username);
+          dispatch({ type: "login", username: data.username });
         }
       });
-  };
-
-  login = (username) => {
-    this.setState({loggedIn: true, route: "search", username: username});
   }
 
-  handleRegister = (event) => {
+  function handleRegister(event) {
     event.preventDefault();
-    const body = { 
+    const body = {
       username: event.target.username.value,
-      email: event.target.email.value, 
-      password: event.target.password.value };
+      email: event.target.email.value,
+      password: event.target.password.value
+    };
     fetch("/register", {
       method: 'post',
       body: JSON.stringify(body),
@@ -71,22 +52,22 @@ class App extends Component {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          this.login(data.username);
+          dispatch({ type: "login", username: data.username });
         }
       });
   };
 
-  renderMainComponent = () => {
-    const { route } = this.state;
+  function renderMainComponent() {
+    const { route } = state;
     switch (route) {
       case "firstTime": {
         fetch("/getmein")
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              this.setState({ route: "search", loggedIn: true, username: data.username });
+              dispatch({ type: "login", username: data.username });
             } else {
-              this.setState({ route: "signin", });
+              dispatch({ type: "changeRoute", route: "signin" });
             }
           });
         return null;
@@ -98,7 +79,7 @@ class App extends Component {
         return (
           <Fragment>
             <TopBar />
-            <Register handleRegister={this.handleRegister} />
+            <Register handleRegister={handleRegister} />
           </Fragment>
         );
       }
@@ -107,26 +88,26 @@ class App extends Component {
         return (
           <Fragment>
             <TopBar />
-            <SignIn handleSignInSubmit={this.handleSignInSubmit} changeRoute={this.changeRoute} />
+            <SignIn handleSignInSubmit={handleSignInSubmit} />
           </Fragment>
         );
       }
     }
   };
 
-  render() {
-    const { errorOpen, errorDescription } = this.state;
-    return (
-      <AppContext.Provider value={this.state}>
-        {this.renderMainComponent()}
+  const { errorOpen, errorDescription } = state;
+  return (
+    <AppDispatch.Provider value={dispatch}>
+      <AppContext.Provider value={state}>
+        {renderMainComponent()}
         <ErrorDialog
           errorOpen={errorOpen}
           errorDescription={errorDescription}
-          onErrorClose={this.onErrorClose}
+          onErrorClose={onErrorClose}
         />
       </AppContext.Provider>
-    );
-  }
+    </AppDispatch.Provider>
+  );
 }
 
 export default App;

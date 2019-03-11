@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext } from './AppContext';
+import { AppContext, AppDispatch } from './AppContext';
 
 /* const mockResults = [
   {
@@ -441,6 +441,7 @@ import { AppContext } from './AppContext';
 
 function Search(props) {
   const context = useContext(AppContext);
+  const dispatch = useContext(AppDispatch);
   const [lastSearch, setLastSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -462,7 +463,7 @@ function Search(props) {
           context.showError(data.status_message);
         }
       })
-      .catch(err => context.showError("Error connecting with API"));
+      .catch(err => dispatch({type: "showError", errorDescription: "Error connecting with API"}));
   }
 
   console.log("Search Component rendered");

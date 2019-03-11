@@ -1,7 +1,7 @@
 import React, { useContext, useState, memo } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
-import { AppContext } from './AppContext';
+import { AppDispatch } from './AppContext';
 
 const options = [
   { name: "English", code: "en" },
@@ -10,19 +10,20 @@ const options = [
 ];
 
 const MenuLanguage = memo((props) => {
-  const context = useContext(AppContext);
+  const dispatch = useContext(AppDispatch);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleClickButton = event => {
     setAnchorEl(event.currentTarget);
+    
   };
 
   const handleMenuItemClick = (event, index) => {
     if (index !== selectedIndex) {
       setSelectedIndex(index);
       setAnchorEl(null);
-      context.changeLanguage(options[index].code);
+      dispatch({type: "changeLanguage", languageCode: options[index].code});
     }
   };
 

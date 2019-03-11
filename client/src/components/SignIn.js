@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -9,6 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
+import { AppDispatch } from './AppContext';
 
 const styles = theme => ({
   main: {
@@ -43,7 +44,8 @@ const styles = theme => ({
 });
 
 const SignIn = (props) => {
-  const { classes, handleSignInSubmit, changeRoute } = props;
+  const { classes, handleSignInSubmit } = props;
+  const dispatch = useContext(AppDispatch);
 
   return (
     <main className={classes.main} onSubmit={handleSignInSubmit}>
@@ -75,7 +77,7 @@ const SignIn = (props) => {
             fullWidth
             variant="contained"
             className={classes.submit}
-            onClick={() => changeRoute("register")}
+            onClick={() => dispatch({type: "changeRoute", route:"register"})}
           >
             Register
           </Button>

@@ -1,9 +1,10 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppContext } from "./AppContext";
+import { AppContext, AppDispatch } from "./AppContext";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
 const Item = memo(function Item(props) {
   const context = useContext(AppContext);
+  const dispatch = useContext(AppDispatch);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [info, setInfo] = useState({});
 
@@ -26,7 +27,7 @@ const Item = memo(function Item(props) {
           context.showError(data.status_message);
         }
       })
-      .catch(err => context.showError("Error connecting with API"));
+      .catch(err => dispatch({type: "showError", errorDescription: "Error connecting with API"}));
   }
 
   async function onDetailsOpen() {
@@ -89,7 +90,7 @@ const Item = memo(function Item(props) {
   }
 
   function onAdd() {
-    context.showError("Jeje!");
+    dispatch({type: "showError", errorDescription: "Jeje!"});
   }
 
   console.log("Item rendered");
