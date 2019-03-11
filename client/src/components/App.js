@@ -1,5 +1,5 @@
 import React, { Fragment, useReducer, useEffect } from 'react';
-import { AppContext, AppDispatch } from "./AppContext";
+import { AppContext, AppDispatch } from "./Contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
@@ -17,19 +17,32 @@ function App(props) {
     errorDescription: ""
   });
 
-  useEffect(() => {
-    if (state.loginStatus === "loggingOut") {
-      fetch("/logout")
+  useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
+    console.log("Intentando entrar con token la primera vez...");
+    fetch("/getmein")
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          console.log("Successfully logged out.");
-          dispatch({type: "loggedOut"});
+          dispatch({ type: "login", username: data.username });
         } else {
-          dispatch({type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again."});
+          dispatch({ type: "changeRoute", route: "signin" });
         }
-      })
-      .catch(err => dispatch({type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again."}));
+      });
+  }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
+
+  useEffect(() => { // Borra la cookie del token de autenticacion
+    if (state.loginStatus === "loggingOut") {
+      fetch("/logout")
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Successfully logged out.");
+            dispatch({ type: "loggedOut" });
+          } else {
+            dispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
+          }
+        })
+        .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
     }
   }, [state.loginStatus]);
 
@@ -37,7 +50,7 @@ function App(props) {
     dispatch({ type: "closeErrorDialog" });
   }
 
-  function handleSignInSubmit(event) {
+  function handleSignIn(event) {
     event.preventDefault();
     const body = { email: event.target.email.value, password: event.target.password.value };
     fetch("/login", {
@@ -56,7 +69,7 @@ function App(props) {
   function handleRegister(event) {
     event.preventDefault();
     if (event.target.password.value !== event.target.repeat_pass.value) {
-      dispatch({type:"showError", errorDescription: "Passwords don't match."});
+      dispatch({ type: "showError", errorDescription: "Passwords don't match." });
     } else {
       const body = {
         username: event.target.username.value,
@@ -81,15 +94,6 @@ function App(props) {
     const { route } = state;
     switch (route) {
       case "firstTime": {
-        fetch("/getmein")
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              dispatch({ type: "login", username: data.username });
-            } else {
-              dispatch({ type: "changeRoute", route: "signin" });
-            }
-          });
         return null;
       }
       case "search": {
@@ -108,7 +112,7 @@ function App(props) {
         return (
           <Fragment>
             <TopBar />
-            <SignIn handleSignInSubmit={handleSignInSubmit} />
+            <SignIn handleSignIn={handleSignIn} />
           </Fragment>
         );
       }

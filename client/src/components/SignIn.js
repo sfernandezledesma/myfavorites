@@ -9,7 +9,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { AppDispatch } from './AppContext';
+import { AppDispatch } from './Contexts';
 
 const styles = theme => ({
   main: {
@@ -44,11 +44,11 @@ const styles = theme => ({
 });
 
 const SignIn = (props) => {
-  const { classes, handleSignInSubmit } = props;
+  const { classes, handleSignIn } = props;
   const dispatch = useContext(AppDispatch);
 
   return (
-    <main className={classes.main} onSubmit={handleSignInSubmit}>
+    <main className={classes.main} onSubmit={handleSignIn}>
       <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />

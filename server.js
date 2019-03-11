@@ -21,7 +21,7 @@ const logout = (req, res) => {
   res.cookie('token', "", { httpOnly: true });
   res.status(200).json({
     success: true,
-    status_message: 'Authentication token cleaned',
+    status_message: 'Authentication token cleared',
   });
 };
 

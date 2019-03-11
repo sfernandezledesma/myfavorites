@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext, AppDispatch } from './AppContext';
+import { AppContext, AppDispatch } from './Contexts';
 
 /* const mockResults = [
   {
@@ -452,18 +452,20 @@ function Search(props) {
   }, [context.languageCode]);
 
   function onSearch(searchTerm) {
-    fetch(`/api/search/${context.languageCode}/${searchTerm}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        if (data.page) {
-          setLastSearch(searchTerm);
-          setSearchResults(data.results);
-        } else {
-          context.showError(data.status_message);
-        }
-      })
-      .catch(err => dispatch({type: "showError", errorDescription: "Error connecting with API"}));
+    if (searchTerm) {
+      fetch(`/api/search/${context.languageCode}/${searchTerm}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          if (data.page) {
+            setLastSearch(searchTerm);
+            setSearchResults(data.results);
+          } else {
+            context.showError(data.status_message);
+          }
+        })
+        .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+    }
   }
 
   console.log("Search Component rendered");
