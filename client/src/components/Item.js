@@ -1,12 +1,18 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppContext, AppDispatch } from "./Contexts";
+import { AppContext, AppDispatch, AppWatchlist } from "../contexts";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
 const Item = memo(function Item(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
+  const watchlist = useContext(AppWatchlist);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [info, setInfo] = useState({});
+  const [onWatchList, setOnWatchList] = useState(false);
+
+  useEffect(() => {
+    setOnWatchList(watchlist.includes(props.item.id));
+  }, [watchlist]);
 
   useEffect(() => {
     if (info.id) {
@@ -27,7 +33,7 @@ const Item = memo(function Item(props) {
           context.showError(data.status_message);
         }
       })
-      .catch(err => dispatch({type: "showError", errorDescription: "Error connecting with API"}));
+      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
   }
 
   async function onDetailsOpen() {
@@ -90,11 +96,48 @@ const Item = memo(function Item(props) {
   }
 
   function onAdd() {
-    dispatch({type: "showError", errorDescription: "Jeje!"});
+    const name = props.item.name || props.item.title;
+    const { id } = props.item;
+    const newItem = { name: name, id: id };
+    fetch("/watchlist/add", {
+      method: "post",
+      body: JSON.stringify(newItem),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        watchlist.add(newItem);
+      }
+    })
+    .catch(err => dispatch({type: "showError", errorDescription: "Could not connect to server"}));
+  }
+
+  function onRemove() {
+    const { id } = props.item;
+    const body = { id: id };
+    fetch("/watchlist/remove", {
+      method: "post",
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        watchlist.remove(id);
+      }
+    })
+    .catch(err => dispatch({type: "showError", errorDescription: "Could not connect to server"}));
   }
 
   console.log("Item rendered");
   const { item } = props;
+  // console.log(item.id);
+  // console.log(watchlist.list[0].id);
+  //console.log(watchlist);
+  //console.log(watchlist.list[0].id === item.id);
+  //console.log("Watchlist:", watchlist.includes(item.id));
+  //console.log(watchlist.list);
   if (!detailsOpen) {
     return (
       <Fragment>
@@ -117,12 +160,12 @@ const Item = memo(function Item(props) {
             </Typography>
           </CardContent>
           <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
-            <Button size="small" onClick={onDetailsOpen}>
-              More Info
-              </Button>
-            <Button size="small" onClick={onAdd}>
-              Add
-              </Button>
+            <Button size="small" onClick={onDetailsOpen}>More Info</Button>
+            {
+              onWatchList
+                ? <Button size="small" onClick={onRemove}>Remove</Button>
+                : <Button size="small" onClick={onAdd}>Add</Button>
+            }
           </CardActions>
         </div>
       </Fragment>

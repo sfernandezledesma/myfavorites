@@ -1,7 +1,7 @@
-import React, { useContext, useState, memo, useEffect, useMemo } from 'react';
+import React, { useContext, useState, memo, useMemo } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
-import { AppDispatch, AppContext } from './Contexts';
+import { AppDispatch, AppContext } from '../contexts';
 
 const options = [
   { name: "English", code: "en" },

@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext, AppDispatch } from './Contexts';
+import { AppContext, AppDispatch, AppWatchlist } from '../contexts';
 
 /* const mockResults = [
   {
@@ -442,8 +442,22 @@ import { AppContext, AppDispatch } from './Contexts';
 function Search(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
+  const watchlist = useContext(AppWatchlist);
   const [lastSearch, setLastSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    fetch("/watchlist/get")
+    .then(res => res.json())
+    .then(data => {
+      console.log("Watchlist fetched:", data);
+      watchlist.setList(data.watchlist);
+    });
+  },[]);
+
+  useEffect(() => {
+    console.log("Watchlist:", watchlist);
+  }, [watchlist]);
 
   useEffect(() => {
     if (lastSearch) {

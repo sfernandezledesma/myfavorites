@@ -3,7 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
-import { AppContext, AppDispatch } from './Contexts';
+import { AppContext, AppDispatch } from '../contexts';
 import { Button } from '@material-ui/core';
 
 const TopBar = memo((props) => {
@@ -13,7 +13,7 @@ const TopBar = memo((props) => {
 
   useEffect(() => {
     document.title = "MyFav" + (loggedIn() ? " | Welcome back!" : "");
-  });
+  }, [context.loginStatus]);
 
   function onLogout() {
     dispatch({ type: "logout" });

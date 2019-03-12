@@ -116,15 +116,25 @@ app.get('/api/search/:language/:title', (req, res) => {
   const { language, title } = req.params;
   fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=${language}&page=1&include_adult=false`)
     .then(response => response.json())
-    .then(data => res.json(data))
-    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to TMDb API"}));
+    .then(data => {
+      data.results.forEach((item) => {
+        item.id = item.media_type[0] + "_" + item.id; // Cambiando el id para evitar colisiones (puede haber pelicula y serie con mismo id)
+      });
+      res.json(data);
+    })
+    .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to TMDb API" }));
 });
+
 app.get('/api/id/:language/:media_type/:id', (req, res) => {
-  const { language, media_type, id } = req.params;
+  const { language, media_type } = req.params;
+  const id = req.params.id.split("_")[1];
   fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=${language}`)
     .then(response => response.json())
-    .then(data => res.json(data))
-    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to TMDb API"}));
+    .then(data => {
+      data.id = media_type[0] + "_" + data.id;
+      res.json(data);
+    })
+    .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to TMDb API" }));
 });
 
 app.get("/users", (req, res) => {
@@ -132,7 +142,82 @@ app.get("/users", (req, res) => {
     .then(users => {
       res.json(users);
     })
-    .catch(err => res.status(400).json({success: false, status_message: "Could not connect to database"}));
+    .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to database" }));
+});
+
+app.get("/watchlist/get", checkToken, (req, res) => {
+  const email = req.decoded.email;
+  db.select("id").from("users").where("email", email)
+    .then(data => {
+      const userId = data[0].id;
+      if (!userId) {
+        return res.status(400).json({ success: false, status_message: "User does not exist" });
+      }
+      db.select("item_id as id", "name").from("watchlist").where("user_id", userId)
+        .then(data => {
+          res.status(200).json({ success: true, watchlist: data, status_message: "Got watchlist" });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(400).json({ success: false, status_message: "Database could not fetch watchlist" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false, status_message: "Error connecting to database" });
+    });
+});
+
+app.post("/watchlist/add", checkToken, (req, res) => {
+  const email = req.decoded.email;
+  const { id, name } = req.body;
+  db.select("id").from("users").where("email", email)
+    .then(data => {
+      const userId = data[0].id;
+      if (!userId) {
+        return res.status(400).json({ success: false, status_message: "User does not exist" });
+      }
+      db.insert({
+        id: id + "_" + userId,
+        name: name,
+        item_id: id,
+        user_id: userId
+      })
+        .into("watchlist")
+        .then(data => {
+          res.status(200).json({ success: true, status_message: "Item added to watchlist" });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(400).json({ success: false, status_message: "Item already in watchlist" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false, status_message: "Error connecting to database" });
+    });
+});
+
+app.post("/watchlist/remove", checkToken, (req, res) => {
+  const email = req.decoded.email;
+  const { id } = req.body;
+  db.select("id").from("users").where("email", email)
+    .then(data => {
+      const userId = data[0].id;
+      if (!userId) {
+        return res.status(400).json({ success: false, status_message: "User does not exist" });
+      }
+      db("watchlist")
+        .where("id", id + "_" + userId)
+        .del()
+        .then(data => {
+          res.status(200).json({ success: true, status_message: "Item deleted from watchlist" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false, status_message: "Error connecting to database" });
+    });
 });
 
 if (process.env.NODE_ENV === 'production') {
