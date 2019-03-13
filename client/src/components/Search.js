@@ -33,7 +33,7 @@ function Search(props) {
   }, [context.languageCode]);
 
   function onSearch(searchTerm) {
-    if (true) {
+    if (searchTerm) {
       fetch(`/api/search/${context.languageCode}/${searchTerm}`)
         .then(response => response.json())
         .then(data => {
