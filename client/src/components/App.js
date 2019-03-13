@@ -1,15 +1,15 @@
 import React, { Fragment, useReducer, useEffect } from 'react';
-import { AppContext, AppDispatch, AppWatchlist } from "../contexts";
+import { AppContext, AppDispatch, AppWatchlist, AppWatchlistDispatch } from "../contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
 import TopBar from './TopBar';
 import Register from './Register';
-import { reducer } from '../reducer';
+import { globalReducer } from '../reducer';
 import { useWatchlist } from '../customHooks';
 
 function App(props) {
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(globalReducer, {
     route: "firstTime",
     loginStatus: "loggedOut",
     username: "",
@@ -17,7 +17,7 @@ function App(props) {
     errorOpen: false,
     errorDescription: ""
   });
-  const watchlist = useWatchlist();
+  const [watchlist, watchlistDispatch] = useWatchlist();
 
   useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
     console.log("Intentando entrar con token la primera vez...");
@@ -125,14 +125,16 @@ function App(props) {
   return (
     <AppDispatch.Provider value={dispatch}>
       <AppContext.Provider value={state}>
-        <AppWatchlist.Provider value={watchlist}>
-          {renderMainComponent()}
-          <ErrorDialog
-            errorOpen={errorOpen}
-            errorDescription={errorDescription}
-            onErrorClose={onErrorClose}
-          />
-        </AppWatchlist.Provider>
+        <AppWatchlistDispatch.Provider value={watchlistDispatch}>
+          <AppWatchlist.Provider value={watchlist}>
+            {renderMainComponent()}
+            <ErrorDialog
+              errorOpen={errorOpen}
+              errorDescription={errorDescription}
+              onErrorClose={onErrorClose}
+            />
+          </AppWatchlist.Provider>
+        </AppWatchlistDispatch.Provider>
       </AppContext.Provider>
     </AppDispatch.Provider>
   );

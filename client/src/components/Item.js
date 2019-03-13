@@ -1,18 +1,13 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppContext, AppDispatch, AppWatchlist } from "../contexts";
+import { AppContext, AppDispatch } from "../contexts";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
 const Item = memo(function Item(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
-  const watchlist = useContext(AppWatchlist);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [info, setInfo] = useState({});
-  const [onWatchList, setOnWatchList] = useState(false);
-
-  useEffect(() => {
-    setOnWatchList(watchlist.includes(props.item.id));
-  }, [watchlist]);
+  const { watchlistDispatch, isOnWatchlist, item } = props;
 
   useEffect(() => {
     if (info.id) {
@@ -104,13 +99,13 @@ const Item = memo(function Item(props) {
       body: JSON.stringify(newItem),
       headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        watchlist.add(newItem);
-      }
-    })
-    .catch(err => dispatch({type: "showError", errorDescription: "Could not connect to server"}));
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          watchlistDispatch({type: "add", item: newItem});
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
   }
 
   function onRemove() {
@@ -121,17 +116,16 @@ const Item = memo(function Item(props) {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        watchlist.remove(id);
-      }
-    })
-    .catch(err => dispatch({type: "showError", errorDescription: "Could not connect to server"}));
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          watchlistDispatch({type: "remove", id: id});
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
   }
 
   console.log("Item rendered");
-  const { item } = props;
   // console.log(item.id);
   // console.log(watchlist.list[0].id);
   //console.log(watchlist);
@@ -162,7 +156,7 @@ const Item = memo(function Item(props) {
           <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
             <Button size="small" onClick={onDetailsOpen}>More Info</Button>
             {
-              onWatchList
+              isOnWatchlist
                 ? <Button size="small" onClick={onRemove}>Remove</Button>
                 : <Button size="small" onClick={onAdd}>Add</Button>
             }

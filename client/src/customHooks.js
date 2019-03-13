@@ -1,25 +1,11 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
+import { watchlistReducer } from './reducer';
 
 export function useWatchlist() {
-  const [watchlist, setWatchlist] = useState({
+  const [watchlist, watchlistDispatch] = useReducer(watchlistReducer, {
     list: [],
-    setList: setList,
-    add: add,
-    remove: remove,
     includes: includes
   });
-
-  function setList(newList) {
-    setWatchlist({ ...this, list: newList });
-  }
-
-  function add({ id, name }) {
-    setWatchlist({ ...this, list: [...this.list, { id: id, name: name }] });
-  }
-
-  function remove(id) {
-    setWatchlist({ ...this, list: this.list.filter((value) => (value.id !== id)) });
-  }
 
   function includes(id) {
     for (let item of this.list) {
@@ -30,5 +16,5 @@ export function useWatchlist() {
     return false;
   }
 
-  return watchlist;
+  return [watchlist, watchlistDispatch];
 }
