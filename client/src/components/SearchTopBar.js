@@ -9,7 +9,7 @@ const SearchTopBar = memo((props) => {
     if (event.key === 'Enter')
       return onSearch(event.target.value);
   };
-
+  console.log("SearchTopBar rendered");
   return (
     <TopBar>
       <SearchIcon />

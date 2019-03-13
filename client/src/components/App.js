@@ -1,4 +1,4 @@
-import React, { Fragment, useReducer, useEffect } from 'react';
+import React, { Fragment, useReducer, useEffect, useCallback } from 'react';
 import { AppContext, AppDispatch, AppWatchlist, AppWatchlistDispatch } from "../contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
@@ -47,10 +47,6 @@ function App(props) {
         .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
     }
   }, [state.loginStatus]);
-
-  function onErrorClose() {
-    dispatch({ type: "closeErrorDialog" });
-  }
 
   function handleSignIn(event) {
     event.preventDefault();
@@ -120,6 +116,10 @@ function App(props) {
       }
     }
   };
+
+  const onErrorClose = useCallback(() => {
+    dispatch({ type: "closeErrorDialog" });
+  }, [dispatch]);
 
   const { errorOpen, errorDescription } = state;
   return (

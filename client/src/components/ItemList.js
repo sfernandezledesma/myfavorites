@@ -6,6 +6,7 @@ import Item from "./Item";
 const ItemList = memo(({ items }) => {
   const watchlist = useContext(AppWatchlist);
   const watchlistDispatch = useContext(AppWatchlistDispatch);
+  console.log("ItemList rendered");
   return (
     <Grid container justify="center" spacing={16} style={{ width: "100%", margin: 0, padding: "1%" }}>
       {items.map((item, index) => (

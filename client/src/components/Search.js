@@ -33,7 +33,7 @@ function Search(props) {
   }, [context.languageCode]);
 
   function onSearch(searchTerm) {
-    if (searchTerm) {
+    if (true) {
       fetch(`/api/search/${context.languageCode}/${searchTerm}`)
         .then(response => response.json())
         .then(data => {
@@ -42,7 +42,7 @@ function Search(props) {
             setLastSearch(searchTerm);
             setSearchResults(data.results);
           } else {
-            context.showError(data.status_message);
+            dispatch({ type: "showError", errorDescription: data.status_message});
           }
         })
         .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
