@@ -50,12 +50,12 @@ const Register = (props) => {
         </Typography>
         <form className={classes.form}>
           <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="username">Name</InputLabel>
-            <Input id="username" type="text" name="username" autoFocus autoComplete="off" />
+            <InputLabel htmlFor="name">Name</InputLabel>
+            <Input id="name" type="text" name="name" autoFocus autoComplete="off" />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" type="email" name="email" autoFocus autoComplete="off" />
+            <InputLabel htmlFor="username">Email Address</InputLabel>
+            <Input id="username" type="email" name="username" autoFocus autoComplete="off" />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>

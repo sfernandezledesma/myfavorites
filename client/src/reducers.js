@@ -43,21 +43,21 @@ export function globalReducer(state, action) {
         ...state,
         loginStatus: "loggedIn",
         route: "search",
-        username: action.username
+        name: action.name
       };
     case "logout":
       return {
         ...state,
         loginStatus: "loggingOut",
         route: "signin",
-        username: ""
+        name: ""
       };
     case "loggedOut":
       return {
         ...state,
         loginStatus: "loggedOut",
         route: "signin",
-        username: ""
+        name: ""
       };
     default:
       return state;

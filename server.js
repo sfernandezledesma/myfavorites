@@ -30,7 +30,7 @@ const login = (req, res) => {
   const password = req.body.password;
 
   if (email && password) {
-    db.select("password_hash", "username").from("users").where("email", email)
+    db.select("password_hash", "name", "id").from("users").where("email", email)
       .then(results => {
         if (!results[0]) {
           return res.status(400).json({
@@ -38,20 +38,21 @@ const login = (req, res) => {
             status_message: "No user found with that email"
           });
         }
-        const username = results[0].username;
+        const name = results[0].name;
         const password_hash = results[0].password_hash;
+        const id = results[0].id;
         if (bcrypt.compareSync(password, password_hash)) {
-          const token = jwt.sign({ email: email, username: username }, config.secret, { expiresIn: '24h' });
+          const token = jwt.sign({ email: email, name: name, id: id }, config.secret, { expiresIn: '24h' });
           res.cookie('token', token, { httpOnly: true });
           res.status(200).json({
             success: true,
             status_message: 'Authentication successful!',
-            username: username
+            name: name
           });
         } else {
           res.status(403).json({
             success: false,
-            status_message: 'Incorrect username or password'
+            status_message: 'Incorrect email or password'
           });
         }
       })
@@ -70,26 +71,26 @@ const login = (req, res) => {
 };
 
 const register = (req, res) => {
-  const { email, username, password } = req.body;
-  if (!email || !username || !password) {
+  const { email, name, password } = req.body;
+  if (!email || !name || !password) {
     res.status(400).json("One of the items is blank.");
   } else {
     const password_hash = bcrypt.hashSync(password);
     db.insert({
       email: email,
-      username: username,
+      name: name,
       password_hash: password_hash,
       joined: new Date()
     }).into("users")
-      .returning("username")
-      .then(registeredUsername => {
-        const token = jwt.sign({ email: email, username: registeredUsername[0] },
+      .returning("id")
+      .then(id => {
+        const token = jwt.sign({ email: email, name: name, id: id[0] },
           config.secret, { expiresIn: '24h' });
         res.cookie('token', token, { httpOnly: true });
         res.json({
           success: true,
           status_message: "User registered succesfully",
-          username: registeredUsername[0]
+          name: name
         });
       })
       .catch(err => res.status(400).json({
@@ -108,7 +109,7 @@ app.post("/login", login);
 app.get("/getmein", checkToken, (req, res) => {
   res.json({
     success: true,
-    username: req.decoded.username
+    name: req.decoded.name
   });
 });
 
@@ -146,78 +147,46 @@ app.get("/users", (req, res) => {
 });
 
 app.get("/watchlist/get", checkToken, (req, res) => {
-  const email = req.decoded.email;
-  db.select("id").from("users").where("email", email)
+  const userId = req.decoded.id;
+  db.select("item_id as id", "name").from("watchlists").where("user_id", userId)
     .then(data => {
-      const userId = data[0].id;
-      if (!userId) {
-        return res.status(400).json({ success: false, status_message: "User does not exist" });
-      }
-      db.select("item_id as id", "name").from("watchlist").where("user_id", userId)
-        .then(data => {
-          res.status(200).json({ success: true, watchlist: data, status_message: "Got watchlist" });
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(400).json({ success: false, status_message: "Database could not fetch watchlist" });
-        });
+      res.status(200).json({ success: true, watchlist: data, status_message: "Got watchlist" });
     })
     .catch(err => {
       console.log(err);
-      res.status(400).json({ success: false, status_message: "Error connecting to database" });
+      res.status(400).json({ success: false, status_message: "Database could not fetch watchlist" });
     });
 });
 
 app.post("/watchlist/add", checkToken, (req, res) => {
-  const email = req.decoded.email;
   const { id, name } = req.body;
-  db.select("id").from("users").where("email", email)
+  const userId = req.decoded.id;
+  db.insert({
+    id: id + "_" + userId,
+    name: name,
+    item_id: id,
+    user_id: userId
+  })
+    .into("watchlists")
     .then(data => {
-      const userId = data[0].id;
-      if (!userId) {
-        return res.status(400).json({ success: false, status_message: "User does not exist" });
-      }
-      db.insert({
-        id: id + "_" + userId,
-        name: name,
-        item_id: id,
-        user_id: userId
-      })
-        .into("watchlist")
-        .then(data => {
-          res.status(200).json({ success: true, status_message: "Item added to watchlist" });
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(400).json({ success: false, status_message: "Item already in watchlist" });
-        });
+      res.status(200).json({ success: true, status_message: "Item added to watchlist" });
     })
     .catch(err => {
       console.log(err);
-      res.status(400).json({ success: false, status_message: "Error connecting to database" });
+      res.status(400).json({ success: false, status_message: "Item already in watchlist" });
     });
 });
 
 app.post("/watchlist/remove", checkToken, (req, res) => {
-  const email = req.decoded.email;
+  const userId = req.decoded.id;
   const { id } = req.body;
-  db.select("id").from("users").where("email", email)
+  db("watchlists")
+    .where("id", id + "_" + userId)
+    .del()
     .then(data => {
-      const userId = data[0].id;
-      if (!userId) {
-        return res.status(400).json({ success: false, status_message: "User does not exist" });
-      }
-      db("watchlist")
-        .where("id", id + "_" + userId)
-        .del()
-        .then(data => {
-          res.status(200).json({ success: true, status_message: "Item deleted from watchlist" });
-        });
+      res.status(200).json({ success: true, status_message: "Item deleted from watchlist" });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(400).json({ success: false, status_message: "Error connecting to database" });
-    });
+    .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to database" }));
 });
 
 if (process.env.NODE_ENV === 'production') {

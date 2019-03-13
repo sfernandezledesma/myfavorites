@@ -27,7 +27,7 @@ const TopBar = memo((props) => {
     <AppBar position="sticky" color="default">
       <Toolbar>
         <Typography color="inherit">
-          {loggedIn() ? context.username : "MyFavorites"}
+          {loggedIn() ? context.name : "MyFavorites"}
         </Typography>
         <MenuLanguage />
         {props.children}

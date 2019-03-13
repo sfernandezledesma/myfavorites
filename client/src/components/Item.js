@@ -103,6 +103,8 @@ const Item = memo(function Item(props) {
       .then(data => {
         if (data.success) {
           watchlistDispatch({type: "add", item: newItem});
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
       .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
@@ -120,6 +122,8 @@ const Item = memo(function Item(props) {
       .then(data => {
         if (data.success) {
           watchlistDispatch({type: "remove", id: id});
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
       .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));

@@ -5,14 +5,14 @@ import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
 import TopBar from './TopBar';
 import Register from './Register';
-import { globalReducer } from '../reducer';
+import { globalReducer } from '../reducers';
 import { useWatchlist } from '../customHooks';
 
 function App(props) {
   const [state, dispatch] = useReducer(globalReducer, {
     route: "firstTime",
     loginStatus: "loggedOut",
-    username: "",
+    name: "",
     languageCode: "en",
     errorOpen: false,
     errorDescription: ""
@@ -25,7 +25,7 @@ function App(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          dispatch({ type: "login", username: data.username });
+          dispatch({ type: "login", name: data.name });
         } else {
           dispatch({ type: "changeRoute", route: "signin" });
         }
@@ -63,7 +63,7 @@ function App(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          dispatch({ type: "login", username: data.username });
+          dispatch({ type: "login", name: data.name });
         }
       });
   }
@@ -74,8 +74,8 @@ function App(props) {
       dispatch({ type: "showError", errorDescription: "Passwords don't match." });
     } else {
       const body = {
-        username: event.target.username.value,
-        email: event.target.email.value,
+        name: event.target.name.value,
+        email: event.target.username.value,
         password: event.target.password.value
       };
       fetch("/register", {
@@ -86,7 +86,7 @@ function App(props) {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            dispatch({ type: "login", username: data.username });
+            dispatch({ type: "login", name: data.name });
           }
         });
     }

@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import { watchlistReducer } from './reducer';
+import { watchlistReducer } from './reducers';
 
 export function useWatchlist() {
   const [watchlist, watchlistDispatch] = useReducer(watchlistReducer, {
