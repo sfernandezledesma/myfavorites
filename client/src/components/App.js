@@ -22,6 +22,11 @@ function App(props) {
   const [watchlist, watchlistDispatch] = useWatchlist();
 
   useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
+    const savedLangageCode = window.localStorage.getItem("languageCode");
+    console.log("Saved language code", savedLangageCode);
+    if (savedLangageCode) {
+      dispatch({type: "changeLanguage", languageCode: savedLangageCode});
+    }
     console.log("Intentando entrar con token la primera vez...");
     fetch("/getmein")
       .then(response => response.json())

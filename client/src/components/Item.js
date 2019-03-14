@@ -130,12 +130,6 @@ const Item = memo(function Item(props) {
   }
 
   console.log("Item rendered");
-  // console.log(item.id);
-  // console.log(watchlist.list[0].id);
-  //console.log(watchlist);
-  //console.log(watchlist.list[0].id === item.id);
-  //console.log("Watchlist:", watchlist.includes(item.id));
-  //console.log(watchlist.list);
   if (!detailsOpen) {
     return (
       <Fragment>

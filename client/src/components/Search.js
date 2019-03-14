@@ -12,15 +12,22 @@ function Search(props) {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    fetch("/watchlist/get")
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        console.log("Watchlist fetched:", data.watchlist);
-        watchlistDispatch({type: "setList", list: data.watchlist});
-      }
-    });
-  },[]);
+    if (context.loginStatus === "loggedIn") {
+      fetch("/watchlist/get")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log("Watchlist fetched:", data.watchlist);
+            watchlistDispatch({ type: "setList", list: data.watchlist });
+          }
+        });
+    } else if (context.loginStatus === "loggedOut") {
+      console.log("Limpiando busqueda y watchlist de usuario");
+      setLastSearch("");
+      setSearchResults([]);
+      watchlistDispatch({ type: "setList", list: [] });
+    }
+  }, [context.loginStatus]);
 
   useEffect(() => {
     console.log("Watchlist:", watchlist);
@@ -42,7 +49,7 @@ function Search(props) {
             setLastSearch(searchTerm);
             setSearchResults(data.results);
           } else {
-            dispatch({ type: "showError", errorDescription: data.status_message});
+            dispatch({ type: "showError", errorDescription: data.status_message });
           }
         })
         .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));

@@ -37,7 +37,9 @@ const MenuLanguage = memo((props) => {
     if (index !== selectedIndex) {
       setSelectedIndex(index);
       setAnchorEl(null);
-      dispatch({ type: "changeLanguage", languageCode: options[index].code });
+      const languageCode = options[index].code;
+      dispatch({ type: "changeLanguage", languageCode: languageCode });
+      window.localStorage.setItem("languageCode", languageCode);
     }
   };
 

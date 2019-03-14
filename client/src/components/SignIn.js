@@ -58,10 +58,6 @@ const SignIn = (props) => {
   const { classes, handleSignIn } = props;
   const dispatch = useContext(AppDispatch);
 
-  function onClickRegister() {
-    
-  }
-
   console.log("SignIn rendered");
   return (
     <main className={classes.main} onSubmit={handleSignIn}>

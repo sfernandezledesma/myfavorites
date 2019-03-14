@@ -55,9 +55,7 @@ export function globalReducer(state, action) {
     case "logout":
       return {
         ...state,
-        loginStatus: "loggingOut",
-        route: "signin",
-        name: ""
+        loginStatus: "loggingOut"
       };
     case "loggedOut":
       return {
