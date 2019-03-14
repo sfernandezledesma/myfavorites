@@ -15,8 +15,12 @@ const TopBar = memo((props) => {
     document.title = "MyFav" + (loggedIn() ? " | Welcome back!" : "");
   }, [context.loginStatus]);
 
-  function onLogout() {
+  function onClickLogout() {
     dispatch({ type: "logout" });
+  }
+
+  function onClickSignIn() {
+    dispatch({type: "signin", signinOpen: true});
   }
 
   function loggedIn() {
@@ -31,7 +35,9 @@ const TopBar = memo((props) => {
         </Typography>
         <MenuLanguage />
         {props.children}
-        {loggedIn() ? <Button onClick={onLogout}>Logout</Button> : null}
+        {loggedIn() 
+          ? <Button onClick={onClickLogout}>Logout</Button> 
+          : <Button onClick={onClickSignIn}>Sign In</Button> }
       </Toolbar>
     </AppBar>
   );

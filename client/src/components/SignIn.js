@@ -10,11 +10,16 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { AppDispatch } from '../contexts';
+import MenuLanguage from './MenuLanguage';
 
 const styles = theme => ({
   main: {
     width: 'auto',
-    display: 'block', // Fix IE 11 issue.
+    height: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: "center",
     marginLeft: theme.spacing.unit * 3,
     marginRight: theme.spacing.unit * 3,
     [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
@@ -24,7 +29,6 @@ const styles = theme => ({
     },
   },
   paper: {
-    marginTop: theme.spacing.unit * 8,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -41,15 +45,32 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
+  displayFlexReverseRow: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between"
+  }
 });
 
 const SignIn = (props) => {
   const { classes, handleSignIn } = props;
   const dispatch = useContext(AppDispatch);
 
+  function onClickRegister() {
+    
+  }
+
+  console.log("SignIn rendered");
   return (
     <main className={classes.main} onSubmit={handleSignIn}>
       <Paper className={classes.paper}>
+        <div className={classes.displayFlexReverseRow} >
+          <MenuLanguage />
+          <Typography variant="h6">MyFavorites</Typography>
+        </div>
+
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -73,15 +94,17 @@ const SignIn = (props) => {
           >
             Sign in
           </Button>
+        </form>
+        <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
           <Button
-            fullWidth
-            variant="contained"
             className={classes.submit}
-            onClick={() => dispatch({type: "changeRoute", route:"register"})}
+            variant="contained"
+            onClick={() => dispatch({ type: "changeRoute", route: "register" })}
           >
             Register
           </Button>
-        </form>
+        </div>
+
       </Paper>
     </main>
   );

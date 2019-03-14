@@ -7,6 +7,7 @@ import TopBar from './TopBar';
 import Register from './Register';
 import { globalReducer } from '../reducers';
 import { useWatchlist } from '../customHooks';
+import { Modal } from '@material-ui/core';
 
 function App(props) {
   const [state, dispatch] = useReducer(globalReducer, {
@@ -14,6 +15,7 @@ function App(props) {
     loginStatus: "loggedOut",
     name: "",
     languageCode: "en",
+    signinOpen: false,
     errorOpen: false,
     errorDescription: ""
   });
@@ -27,7 +29,7 @@ function App(props) {
         if (data.success) {
           dispatch({ type: "login", name: data.name });
         } else {
-          dispatch({ type: "changeRoute", route: "signin" });
+          dispatch({ type: "signin", signinOpen: true });
         }
       });
   }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
@@ -60,6 +62,8 @@ function App(props) {
       .then(data => {
         if (data.success) {
           dispatch({ type: "login", name: data.name });
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
         }
       });
   }
@@ -91,9 +95,6 @@ function App(props) {
   function renderMainComponent() {
     const { route } = state;
     switch (route) {
-      case "firstTime": {
-        return null;
-      }
       case "search": {
         return <Search />;
       }
@@ -105,14 +106,8 @@ function App(props) {
           </Fragment>
         );
       }
-      case "signin":
       default: {
-        return (
-          <Fragment>
-            <TopBar />
-            <SignIn handleSignIn={handleSignIn} />
-          </Fragment>
-        );
+        return null;
       }
     }
   };
@@ -121,7 +116,8 @@ function App(props) {
     dispatch({ type: "closeErrorDialog" });
   }, [dispatch]);
 
-  const { errorOpen, errorDescription } = state;
+  console.log("App rendered");
+  const { errorOpen, errorDescription, signinOpen } = state;
   return (
     <AppDispatch.Provider value={dispatch}>
       <AppContext.Provider value={state}>
@@ -133,6 +129,9 @@ function App(props) {
               errorDescription={errorDescription}
               onErrorClose={onErrorClose}
             />
+            <Modal open={signinOpen}>
+              <SignIn handleSignIn={handleSignIn} />
+            </Modal>
           </AppWatchlist.Provider>
         </AppWatchlistDispatch.Provider>
       </AppContext.Provider>

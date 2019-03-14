@@ -55,7 +55,7 @@ const Register = (props) => {
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="username">Email Address</InputLabel>
-            <Input id="username" type="email" name="username" autoFocus autoComplete="off" />
+            <Input id="username" type="email" name="username" autoComplete="off" />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="password">Password</InputLabel>
