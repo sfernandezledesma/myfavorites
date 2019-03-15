@@ -31,7 +31,7 @@ const TopBar = withRouter((props) => {
       return (
         <Fragment>
           <Link to="/"><Button onClick={onClickLogout}>Logout</Button></Link>
-          {path !== "/search" ? <Link to="/search"><Button>Search</Button></Link> : null}
+          {!path.includes("/search") ? <Link to="/search"><Button>Search</Button></Link> : null}
         </Fragment>
       );
     } else {

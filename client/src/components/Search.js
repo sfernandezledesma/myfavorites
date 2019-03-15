@@ -1,12 +1,11 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext, AppDispatch, AppWatchlist, AppWatchlistDispatch } from '../contexts';
+import { AppContext, AppDispatch, AppWatchlistDispatch } from '../contexts';
 
 function Search(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
-  const watchlist = useContext(AppWatchlist);
   const watchlistDispatch = useContext(AppWatchlistDispatch);
   const [lastSearch, setLastSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -30,8 +29,10 @@ function Search(props) {
   }, [context.loginStatus]);
 
   useEffect(() => {
-    console.log("Watchlist:", watchlist);
-  }, [watchlist]);
+    if (props.match.params.query) {
+      onSearch(props.match.params.query);
+    }
+  }, []);
 
   useEffect(() => {
     if (lastSearch) {
@@ -48,6 +49,7 @@ function Search(props) {
           if (data.page) {
             setLastSearch(searchTerm);
             setSearchResults(data.results);
+            props.history.push("/search/" + searchTerm);
           } else {
             dispatch({ type: "showError", errorDescription: data.status_message });
           }

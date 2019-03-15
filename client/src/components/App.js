@@ -129,6 +129,7 @@ function App(props) {
                   );
                 }} />
                 <Route exact path="/search" component={Search} />
+                <Route exact path="/search/:query" component={Search} />
               </Fragment>
             </Router>
             <ErrorDialog
