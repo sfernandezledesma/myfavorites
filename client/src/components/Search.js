@@ -29,10 +29,8 @@ function Search(props) {
   }, [context.loginStatus]);
 
   useEffect(() => {
-    if (props.match.params.query) {
-      onSearch(props.match.params.query);
-    }
-  }, []);
+    onSearch(props.match.params.query);
+  }, [props.match.params.query]);
 
   useEffect(() => {
     if (lastSearch) {
@@ -47,9 +45,12 @@ function Search(props) {
         .then(data => {
           console.log(data);
           if (data.page) {
+            const url = "/search/" + searchTerm;
+            if (props.location.pathname !== url) { // Se buscó usando SearchTopBar, no por URL
+              props.history.push(url);
+            }
             setLastSearch(searchTerm);
             setSearchResults(data.results);
-            props.history.push("/search/" + searchTerm);
           } else {
             dispatch({ type: "showError", errorDescription: data.status_message });
           }
