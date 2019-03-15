@@ -1,4 +1,4 @@
-import React, { useContext, useState, memo, useMemo } from 'react';
+import React, { useContext, useState, memo, useEffect } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
 import { AppDispatch, AppContext } from '../contexts';
@@ -23,11 +23,11 @@ const MenuLanguage = memo((props) => {
   const dispatch = useContext(AppDispatch);
   const context = useContext(AppContext);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(useMemo(() => indexOfLanguageCode(context.languageCode), []));
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // useEffect(() => {
-  //   setSelectedIndex(indexOfLanguageCode(context.languageCode));
-  // }, []);
+  useEffect(() => {
+    setSelectedIndex(indexOfLanguageCode(context.languageCode));
+  }, []);
 
   const handleClickButton = event => {
     setAnchorEl(event.currentTarget);

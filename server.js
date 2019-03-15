@@ -100,20 +100,20 @@ const register = (req, res) => {
   }
 };
 
-app.get("/logout", logout);
+app.get("/api/logout", logout);
 
-app.post("/register", register);
+app.post("/api/register", register);
 
-app.post("/login", login);
+app.post("/api/login", login);
 
-app.get("/getmein", checkToken, (req, res) => {
+app.get("/api/getmein", checkToken, (req, res) => {
   res.json({
     success: true,
     name: req.decoded.name
   });
 });
 
-app.get('/api/search/:language/:title', (req, res) => {
+app.get('/api/search/:language/:title', checkToken, (req, res) => {
   const { language, title } = req.params;
   fetch(`https://api.themoviedb.org/3/search/multi?api_key=${process.env.TMDB_API_KEY}&query=${title}&language=${language}&page=1&include_adult=false`)
     .then(response => response.json())
@@ -126,7 +126,7 @@ app.get('/api/search/:language/:title', (req, res) => {
     .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to TMDb API" }));
 });
 
-app.get('/api/id/:language/:media_type/:id', (req, res) => {
+app.get('/api/id/:language/:media_type/:id', checkToken, (req, res) => {
   const { language, media_type } = req.params;
   const id = req.params.id.split("_")[1];
   fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=${language}`)
@@ -138,7 +138,7 @@ app.get('/api/id/:language/:media_type/:id', (req, res) => {
     .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to TMDb API" }));
 });
 
-app.get("/users", (req, res) => {
+app.get("/api/users", (req, res) => {
   db.select().from("users")
     .then(users => {
       res.json(users);
@@ -146,7 +146,7 @@ app.get("/users", (req, res) => {
     .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to database" }));
 });
 
-app.get("/watchlist/get", checkToken, (req, res) => {
+app.get("/api/watchlist/get", checkToken, (req, res) => {
   const userId = req.decoded.id;
   db.select("item_id as id", "name").from("watchlists").where("user_id", userId)
     .then(data => {
@@ -158,7 +158,7 @@ app.get("/watchlist/get", checkToken, (req, res) => {
     });
 });
 
-app.post("/watchlist/add", checkToken, (req, res) => {
+app.post("/api/watchlist/add", checkToken, (req, res) => {
   const { id, name } = req.body;
   const userId = req.decoded.id;
   db.insert({

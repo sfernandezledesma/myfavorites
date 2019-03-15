@@ -94,7 +94,7 @@ const Item = memo(function Item(props) {
     const name = props.item.name || props.item.title;
     const { id } = props.item;
     const newItem = { name: name, id: id };
-    fetch("/watchlist/add", {
+    fetch("/api/watchlist/add", {
       method: "post",
       body: JSON.stringify(newItem),
       headers: { 'Content-Type': 'application/json' }
@@ -113,7 +113,7 @@ const Item = memo(function Item(props) {
   function onRemove() {
     const { id } = props.item;
     const body = { id: id };
-    fetch("/watchlist/remove", {
+    fetch("/api/watchlist/remove", {
       method: "post",
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' }

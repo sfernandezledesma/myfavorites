@@ -13,7 +13,7 @@ function Search(props) {
 
   useEffect(() => {
     if (context.loginStatus === "loggedIn") {
-      fetch("/watchlist/get")
+      fetch("/api/watchlist/get")
         .then(res => res.json())
         .then(data => {
           if (data.success) {

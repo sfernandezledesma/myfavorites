@@ -41,7 +41,7 @@ const styles = theme => ({
 
 const Register = (props) => {
   const { classes, handleRegister } = props;
-
+  console.log("Register rendered");
   return (
     <main className={classes.main} onSubmit={handleRegister}>
       <Paper className={classes.paper}>

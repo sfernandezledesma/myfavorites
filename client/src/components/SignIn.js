@@ -10,12 +10,11 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { AppDispatch } from '../contexts';
-import MenuLanguage from './MenuLanguage';
+import { Link } from "react-router-dom";
 
 const styles = theme => ({
   main: {
     width: 'auto',
-    height: "100%",
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -29,6 +28,7 @@ const styles = theme => ({
     },
   },
   paper: {
+    marginTop: theme.spacing.unit * 8,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -62,11 +62,6 @@ const SignIn = (props) => {
   return (
     <main className={classes.main} onSubmit={handleSignIn}>
       <Paper className={classes.paper}>
-        <div className={classes.displayFlexReverseRow} >
-          <MenuLanguage />
-          <Typography variant="h6">MyFavorites</Typography>
-        </div>
-
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -92,13 +87,14 @@ const SignIn = (props) => {
           </Button>
         </form>
         <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
-          <Button
-            className={classes.submit}
-            variant="contained"
-            onClick={() => dispatch({ type: "changeRoute", route: "register" })}
-          >
-            Register
-          </Button>
+          <Link to="/register">
+            <Button
+              className={classes.submit}
+              variant="contained"
+              onClick={() => dispatch({ type: "changeRoute", route: "register" })}>
+              Register
+            </Button>
+          </Link>
         </div>
 
       </Paper>

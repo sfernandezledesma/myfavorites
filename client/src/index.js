@@ -4,6 +4,7 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import DarkTheme from './components/DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import './index.css';
 
 ReactDOM.render(
   <DarkTheme>

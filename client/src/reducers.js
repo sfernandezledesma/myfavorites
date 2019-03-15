@@ -17,17 +17,6 @@ export function watchlistReducer(state, action) {
 
 export function globalReducer(state, action) {
   switch (action.type) {
-    case "signin":
-      return {
-        ...state,
-        signinOpen: action.signinOpen
-      };
-    case "changeRoute":
-      return {
-        ...state,
-        route: action.route,
-        signinOpen: false
-      };
     case "changeLanguage":
       return {
         ...state,
@@ -47,9 +36,7 @@ export function globalReducer(state, action) {
     case "login":
       return {
         ...state,
-        signinOpen: false,
         loginStatus: "loggedIn",
-        route: "search",
         name: action.name
       };
     case "logout":
@@ -61,7 +48,6 @@ export function globalReducer(state, action) {
       return {
         ...state,
         loginStatus: "loggedOut",
-        signinOpen: true,
         name: ""
       };
     default:
