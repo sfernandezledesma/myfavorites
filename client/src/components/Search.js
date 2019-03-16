@@ -7,8 +7,8 @@ function Search(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
   const watchlistDispatch = useContext(AppWatchlistDispatch);
-  const [lastSearch, setLastSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const { query } = props.match.params;
 
   useEffect(() => {
     if (context.loginStatus === "loggedIn") {
@@ -22,40 +22,33 @@ function Search(props) {
         });
     } else if (context.loginStatus === "loggedOut") {
       console.log("Limpiando busqueda y watchlist de usuario");
-      setLastSearch("");
       setSearchResults([]);
       watchlistDispatch({ type: "setList", list: [] });
     }
   }, [context.loginStatus]);
 
   useEffect(() => {
-    onSearch(props.match.params.query);
-  }, [props.match.params.query]);
+    if (query)
+      search(query);
+  }, [query, context.languageCode]);
 
-  useEffect(() => {
-    if (lastSearch) {
-      onSearch(lastSearch);
-    }
-  }, [context.languageCode]);
+  function search(searchTerm) {
+    fetch(`/api/search/${context.languageCode}/${searchTerm}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        if (data.page) {
+          setSearchResults(data.results);
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+  }
 
   function onSearch(searchTerm) {
     if (searchTerm) {
-      fetch(`/api/search/${context.languageCode}/${searchTerm}`)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          if (data.page) {
-            const url = "/search/" + searchTerm;
-            if (props.location.pathname !== url) { // Se buscó usando SearchTopBar, no por URL
-              props.history.push(url);
-            }
-            setLastSearch(searchTerm);
-            setSearchResults(data.results);
-          } else {
-            dispatch({ type: "showError", errorDescription: data.status_message });
-          }
-        })
-        .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+      props.history.push("/search/" + searchTerm);
     }
   }
 
