@@ -7,7 +7,7 @@ import TopBar from './TopBar';
 import Register from './Register';
 import { globalReducer } from '../reducers';
 import { useWatchlist } from '../customHooks';
-import { Route, Redirect, withRouter } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from './Navigation';
 
 function App(props) {
@@ -19,51 +19,112 @@ function App(props) {
     errorDescription: ""
   });
   const [watchlist, watchlistDispatch] = useWatchlist();
+  const { errorOpen, errorDescription } = state;
+  console.log("App rendered");
 
-  useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
-    console.log("Intentando entrar con token la primera vez...");
-    fetch("/api/getmein")
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          dispatch({ type: "login", name: data.name });
-        } else {
-          dispatch({ type: "signin", signinOpen: true });
-        }
-      });
-  }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
+  useFirstTimeTokenCheck();
+  useOnLoggingOut();
+  useGetAndCleanWatchlist();
+  
+  const onErrorClose = useCallback(() => {
+    dispatch({ type: "closeErrorDialog" });
+  }, [dispatch]);
 
-  useEffect(() => { // Borra la cookie del token de autenticacion
-    if (state.loginStatus === "loggingOut") {
-      fetch("/api/logout")
+  return (
+    <AppDispatch.Provider value={dispatch}>
+      <AppContext.Provider value={state}>
+        <AppWatchlistDispatch.Provider value={watchlistDispatch}>
+          <AppWatchlist.Provider value={watchlist}>
+
+            <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} />
+            <PrivateRoute exact path="/search/:query?" component={Search} />
+            <Route exact path="/signin" render={(props) => {
+              if (loggedIn()) {
+                const urlToGoNext = props.location.state ? props.location.state.from : "/search";
+                return <Redirect to={urlToGoNext} />;
+              } else {
+                return (
+                  <Fragment>
+                    <TopBar />
+                    <SignIn handleSignIn={handleSignIn} {...props} />
+                  </Fragment>
+                );
+              }
+            }} />
+            <Route exact path="/register" render={(props) => {
+              return (
+                <Fragment>
+                  <TopBar />
+                  <Register handleRegister={handleRegister} {...props} />
+                </Fragment>
+              );
+            }} />
+
+            <ErrorDialog
+              errorOpen={errorOpen}
+              errorDescription={errorDescription}
+              onErrorClose={onErrorClose}
+            />
+          </AppWatchlist.Provider>
+        </AppWatchlistDispatch.Provider>
+      </AppContext.Provider>
+    </AppDispatch.Provider>
+  );
+
+  function useFirstTimeTokenCheck() {
+    useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
+      console.log("Intentando entrar con token la primera vez...");
+      fetch("/api/getmein")
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            console.log("Successfully logged out.");
-            dispatch({ type: "loggedOut" });
+            dispatch({ type: "login", name: data.name });
           } else {
-            dispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
-          }
-        })
-        .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
-    }
-  }, [state.loginStatus]);
-
-  useEffect(() => { // Descarga la watchlist al logearse y la borra al salir
-    if (state.loginStatus === "loggedIn") {
-      fetch("/api/watchlist/get")
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log("Watchlist fetched:", data.watchlist);
-            watchlistDispatch({ type: "setList", list: data.watchlist });
+            dispatch({ type: "signin", signinOpen: true });
           }
         });
-    } else if (state.loginStatus === "loggingOut") {
-      console.log("Limpiando busqueda y watchlist de usuario...");
-      watchlistDispatch({ type: "setList", list: [] });
-    }
-  }, [state.loginStatus]);
+    }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
+  }
+
+  function useOnLoggingOut() {
+    useEffect(() => { // Borra la cookie del token de autenticacion
+      if (state.loginStatus === "loggingOut") {
+        fetch("/api/logout")
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log("Successfully logged out.");
+              dispatch({ type: "loggedOut" });
+            } else {
+              dispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
+            }
+          })
+          .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
+      }
+    }, [state.loginStatus]);
+  }
+
+  function useGetAndCleanWatchlist() {
+    useEffect(() => { // Descarga la watchlist al logearse y la borra al salir
+      if (state.loginStatus === "loggedIn") {
+        fetch("/api/watchlist/get")
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              console.log("Watchlist fetched:", data.watchlist);
+              watchlistDispatch({ type: "setList", list: data.watchlist });
+            }
+          });
+      } else if (state.loginStatus === "loggingOut") {
+        console.log("Limpiando busqueda y watchlist de usuario...");
+        watchlistDispatch({ type: "setList", list: [] });
+      }
+    }, [state.loginStatus]);
+  }
+
+  function loggedIn() {
+    return state.loginStatus === "loggedIn";
+  }
 
   function handleSignIn(event) {
     event.preventDefault();
@@ -106,58 +167,6 @@ function App(props) {
         });
     }
   };
-
-  const onErrorClose = useCallback(() => {
-    dispatch({ type: "closeErrorDialog" });
-  }, [dispatch]);
-
-  function loggedIn() {
-    return state.loginStatus === "loggedIn";
-  }
-
-  console.log("App rendered");
-  const { errorOpen, errorDescription } = state;
-
-  return (
-    <AppDispatch.Provider value={dispatch}>
-      <AppContext.Provider value={state}>
-        <AppWatchlistDispatch.Provider value={watchlistDispatch}>
-          <AppWatchlist.Provider value={watchlist}>
-
-            <PrivateRoute path="/" render={() => <Redirect to="/search" />} />
-            <Route exact path="/signin" render={(props) => {
-              if (loggedIn()) {
-                const urlToGoNext = props.location.state ? props.location.state.from : "/search";
-                return <Redirect to={urlToGoNext} />;
-              } else {
-                return (
-                  <Fragment>
-                    <TopBar />
-                    <SignIn handleSignIn={handleSignIn} {...props} />
-                  </Fragment>
-                );
-              }
-            }} />
-            <Route exact path="/register" render={(props) => {
-              return (
-                <Fragment>
-                  <TopBar />
-                  <Register handleRegister={handleRegister} {...props} />
-                </Fragment>
-              );
-            }} />
-            <PrivateRoute path="/search/:query?" component={Search} />
-
-            <ErrorDialog
-              errorOpen={errorOpen}
-              errorDescription={errorDescription}
-              onErrorClose={onErrorClose}
-            />
-          </AppWatchlist.Provider>
-        </AppWatchlistDispatch.Provider>
-      </AppContext.Provider>
-    </AppDispatch.Provider>
-  );
 }
 
-export default withRouter(App);
+export default App;

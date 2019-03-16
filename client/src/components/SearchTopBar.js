@@ -3,12 +3,7 @@ import TopBar from "./TopBar";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 
-const SearchTopBar = memo((props) => {
-  const { onSearch } = props;
-  const onKeyPress = (event) => {
-    if (event.key === 'Enter')
-      return onSearch(event.target.value);
-  };
+const SearchTopBar = memo(({ onSearch }) => {
   console.log("SearchTopBar rendered");
   return (
     <TopBar>
@@ -21,6 +16,11 @@ const SearchTopBar = memo((props) => {
       />
     </TopBar>
   );
+
+  function onKeyPress(event) {
+    if (event.key === 'Enter')
+      return onSearch(event.target.value);
+  }
 });
 
 export default SearchTopBar;

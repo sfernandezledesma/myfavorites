@@ -24,30 +24,11 @@ const MenuLanguage = memo((props) => {
   const context = useContext(AppContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  console.log("MenuLanguage rendered");
 
   useEffect(() => {
     setSelectedIndex(indexOfLanguageCode(context.languageCode));
   }, []);
-
-  const handleClickButton = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuItemClick = (event, index) => {
-    if (index !== selectedIndex) {
-      setSelectedIndex(index);
-      setAnchorEl(null);
-      const languageCode = options[index].code;
-      dispatch({ type: "changeLanguage", languageCode: languageCode });
-      window.localStorage.setItem("languageCode", languageCode);
-    }
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  console.log("MenuLanguage rendered");
 
   return (
     <div>
@@ -72,6 +53,24 @@ const MenuLanguage = memo((props) => {
       </Menu>
     </div>
   );
+
+  function handleClickButton(event)  {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleMenuItemClick(event, index) {
+    if (index !== selectedIndex) {
+      setSelectedIndex(index);
+      setAnchorEl(null);
+      const languageCode = options[index].code;
+      dispatch({ type: "changeLanguage", languageCode: languageCode });
+      window.localStorage.setItem("languageCode", languageCode);
+    }
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
 });
 
 export default MenuLanguage;

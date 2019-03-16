@@ -9,13 +9,26 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 
 const TopBar = withRouter((props) => {
-  console.log("TopBar rendered");
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
+  console.log("TopBar rendered");
 
   useEffect(() => {
     document.title = "MyFav" + (loggedIn() ? " | Welcome back!" : "");
   }, [context.loginStatus]);
+
+  return (
+    <AppBar position="sticky" color="default">
+      <Toolbar>
+        <Typography color="inherit">
+          {loggedIn() ? context.name : "MyFavorites"}
+        </Typography>
+        <MenuLanguage />
+        {props.children}
+        {renderNavButtons()}
+      </Toolbar>
+    </AppBar>
+  );
 
   function onClickLogout() {
     dispatch({ type: "logout" });
@@ -43,19 +56,6 @@ const TopBar = withRouter((props) => {
       );
     }
   }
-
-  return (
-    <AppBar position="sticky" color="default">
-      <Toolbar>
-        <Typography color="inherit">
-          {loggedIn() ? context.name : "MyFavorites"}
-        </Typography>
-        <MenuLanguage />
-        {props.children}
-        {renderNavButtons()}
-      </Toolbar>
-    </AppBar>
-  );
 });
 
 export default TopBar;

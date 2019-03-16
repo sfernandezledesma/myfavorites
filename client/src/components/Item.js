@@ -6,130 +6,17 @@ const Item = memo(function Item(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [info, setInfo] = useState({});
+  const [details, setDetails] = useState({});
   const { watchlistDispatch, isOnWatchlist, item } = props;
+  console.log("Item rendered");
 
   useEffect(() => {
-    if (info.id) {
-      console.log("Item info re-fetched");
+    if (details.id) {
+      console.log("Item details re-fetched");
       fetchDetails();
     }
   }, [context.languageCode]);
 
-  function fetchDetails() {
-    const { id, media_type } = props.item;
-    return fetch(`/api/id/${context.languageCode}/${media_type}/${id}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        if (data.id) {
-          setInfo(data);
-        } else {
-          context.showError(data.status_message);
-        }
-      })
-      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
-  }
-
-  async function onDetailsOpen() {
-    const { id } = props.item;
-    if (info.id === id) {
-      // No hace faltar hacer nada
-    } else {
-      await fetchDetails();
-    }
-    setDetailsOpen(true);
-  }
-
-  function onDetailsClose() {
-    setDetailsOpen(false);
-  }
-
-  function renderDetailsCardContent() {
-    const { item } = props;
-    if (item.media_type === "person") {
-      return (
-        <Fragment>
-          <Typography variant="subtitle1">
-            {info.name || ""}
-          </Typography>
-          <Typography>
-            {info.birthday ? "Birthday: " + info.birthday : ""}
-          </Typography>
-          <Typography>
-            {info.known_for_department ? "Known for: " + info.known_for_department : ""}
-          </Typography>
-          <Typography gutterBottom>
-            {info.place_of_birth ? "Place of birth: " + info.place_of_birth : ""}
-          </Typography>
-          <Typography align="justify">
-            {info.biography || ""}
-          </Typography>
-        </Fragment>
-      );
-    } else {
-      return (
-        <Fragment>
-          <Typography variant="subtitle1">
-            {info.name || info.title}
-          </Typography>
-          <Typography>
-            {(info.first_air_date || info.release_date || "").split("-")[0]}{" | " + item.media_type.toUpperCase() + (info.runtime ? " | " + info.runtime + " mins" : "")}
-          </Typography>
-          <Typography>
-            {info.genres ? info.genres.map(genre => genre.name).join(", ") : ""}
-          </Typography>
-          <Typography gutterBottom>
-            {info.vote_average ? "TMDb Rating: " + info.vote_average + " | Votes: " + info.vote_count : ""}
-          </Typography>
-          <Typography align="justify">
-            {info.overview || info.biography || ""}
-          </Typography>
-        </Fragment>
-      );
-    }
-  }
-
-  function onAdd() {
-    const name = props.item.name || props.item.title;
-    const { id } = props.item;
-    const newItem = { name: name, id: id };
-    fetch("/api/watchlist/add", {
-      method: "post",
-      body: JSON.stringify(newItem),
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          watchlistDispatch({type: "add", item: newItem});
-        } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
-        }
-      })
-      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
-  }
-
-  function onRemove() {
-    const { id } = props.item;
-    const body = { id: id };
-    fetch("/api/watchlist/remove", {
-      method: "post",
-      body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          watchlistDispatch({type: "remove", id: id});
-        } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
-        }
-      })
-      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
-  }
-
-  console.log("Item rendered");
   if (!detailsOpen) {
     return (
       <Fragment>
@@ -173,6 +60,119 @@ const Item = memo(function Item(props) {
         </CardActions>
       </div>
     );
+  }
+
+  function fetchDetails() {
+    const { id, media_type } = props.item;
+    return fetch(`/api/id/${context.languageCode}/${media_type}/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        if (data.id) {
+          setDetails(data);
+        } else {
+          context.showError(data.status_message);
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+  }
+
+  async function onDetailsOpen() {
+    const { id } = props.item;
+    if (details.id === id) {
+      // No hace faltar hacer nada
+    } else {
+      await fetchDetails();
+    }
+    setDetailsOpen(true);
+  }
+
+  function onDetailsClose() {
+    setDetailsOpen(false);
+  }
+
+  function renderDetailsCardContent() {
+    const { item } = props;
+    if (item.media_type === "person") {
+      return (
+        <Fragment>
+          <Typography variant="subtitle1">
+            {details.name || ""}
+          </Typography>
+          <Typography>
+            {details.birthday ? "Birthday: " + details.birthday : ""}
+          </Typography>
+          <Typography>
+            {details.known_for_department ? "Known for: " + details.known_for_department : ""}
+          </Typography>
+          <Typography gutterBottom>
+            {details.place_of_birth ? "Place of birth: " + details.place_of_birth : ""}
+          </Typography>
+          <Typography align="justify">
+            {details.biography || ""}
+          </Typography>
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment>
+          <Typography variant="subtitle1">
+            {details.name || details.title}
+          </Typography>
+          <Typography>
+            {(details.first_air_date || details.release_date || "").split("-")[0]}{" | " + item.media_type.toUpperCase() + (details.runtime ? " | " + details.runtime + " mins" : "")}
+          </Typography>
+          <Typography>
+            {details.genres ? details.genres.map(genre => genre.name).join(", ") : ""}
+          </Typography>
+          <Typography gutterBottom>
+            {details.vote_average ? "TMDb Rating: " + details.vote_average + " | Votes: " + details.vote_count : ""}
+          </Typography>
+          <Typography align="justify">
+            {details.overview || details.biography || ""}
+          </Typography>
+        </Fragment>
+      );
+    }
+  }
+
+  function onAdd() {
+    const name = props.item.name || props.item.title;
+    const { id } = props.item;
+    const newItem = { name: name, id: id };
+    fetch("/api/watchlist/add", {
+      method: "post",
+      body: JSON.stringify(newItem),
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          watchlistDispatch({type: "add", item: newItem});
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
+  }
+
+  function onRemove() {
+    const { id } = props.item;
+    const body = { id: id };
+    fetch("/api/watchlist/remove", {
+      method: "post",
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          watchlistDispatch({type: "remove", id: id});
+        } else {
+          dispatch({ type: "showError", errorDescription: data.status_message });
+        }
+      })
+      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
   }
 });
 

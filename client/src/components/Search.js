@@ -8,11 +8,19 @@ function Search(props) {
   const dispatch = useContext(AppDispatch);
   const [searchResults, setSearchResults] = useState([]);
   const { query } = props.match.params;
+  console.log("Search Component rendered");
   
   useEffect(() => {
     if (query)
       search(query);
   }, [query, context.languageCode]);
+
+  return (
+    <Fragment>
+      <SearchTopBar onSearch={onSearch} />
+      <ItemList items={searchResults} />
+    </Fragment>
+  );
 
   function search(searchTerm) {
     fetch(`/api/search/${context.languageCode}/${searchTerm}`)
@@ -36,14 +44,6 @@ function Search(props) {
       props.history.push("/search/" + searchTerm);
     }
   }
-
-  console.log("Search Component rendered");
-  return (
-    <Fragment>
-      <SearchTopBar onSearch={onSearch} />
-      <ItemList items={searchResults} />
-    </Fragment>
-  );
 }
 
 export default Search;
