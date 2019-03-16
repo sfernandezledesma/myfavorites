@@ -1,32 +1,14 @@
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext, AppDispatch, AppWatchlistDispatch } from '../contexts';
+import { AppContext, AppDispatch } from '../contexts';
 
 function Search(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
-  const watchlistDispatch = useContext(AppWatchlistDispatch);
   const [searchResults, setSearchResults] = useState([]);
   const { query } = props.match.params;
-
-  useEffect(() => {
-    if (context.loginStatus === "loggedIn") {
-      fetch("/api/watchlist/get")
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log("Watchlist fetched:", data.watchlist);
-            watchlistDispatch({ type: "setList", list: data.watchlist });
-          }
-        });
-    } else if (context.loginStatus === "loggedOut") {
-      console.log("Limpiando busqueda y watchlist de usuario");
-      setSearchResults([]);
-      watchlistDispatch({ type: "setList", list: [] });
-    }
-  }, [context.loginStatus]);
-
+  
   useEffect(() => {
     if (query)
       search(query);
@@ -41,6 +23,9 @@ function Search(props) {
           setSearchResults(data.results);
         } else {
           dispatch({ type: "showError", errorDescription: data.status_message });
+          if (data.status_message.toLowerCase().includes("token")) {
+            dispatch({type: "logout"});
+          }
         }
       })
       .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));

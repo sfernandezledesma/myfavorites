@@ -37,7 +37,7 @@ const TopBar = withRouter((props) => {
     } else {
       return (
         <Fragment>
-          {path !== "/" ? <Link to="/"><Button>Sign In</Button></Link> : null}
+          {path !== "/signin" ? <Link to="/"><Button>Sign In</Button></Link> : null}
           {path !== "/register" ? <Link to="/register"><Button>Register</Button></Link> : null}
         </Fragment>
       );
