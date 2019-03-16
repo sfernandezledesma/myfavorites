@@ -5,10 +5,10 @@ import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
 import TopBar from './TopBar';
 import Register from './Register';
-import { globalReducer } from '../reducers';
-import { useWatchlist } from '../customHooks';
+import { globalReducer, watchlistReducer } from '../reducers';
 import { Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from './Navigation';
+import { includes } from "../utils";
 
 function App(props) {
   const [state, dispatch] = useReducer(globalReducer, {
@@ -24,8 +24,7 @@ function App(props) {
 
   useFirstTimeTokenCheck();
   useOnLoggingOut();
-  useGetAndCleanWatchlist();
-  
+
   const onErrorClose = useCallback(() => {
     dispatch({ type: "closeErrorDialog" });
   }, [dispatch]);
@@ -104,7 +103,12 @@ function App(props) {
     }, [state.loginStatus]);
   }
 
-  function useGetAndCleanWatchlist() {
+  function useWatchlist() {
+    const [watchlist, watchlistDispatch] = useReducer(watchlistReducer, {
+      list: [],
+      includes: includes
+    });
+    
     useEffect(() => { // Descarga la watchlist al logearse y la borra al salir
       if (state.loginStatus === "loggedIn") {
         fetch("/api/watchlist/get")
@@ -120,6 +124,8 @@ function App(props) {
         watchlistDispatch({ type: "setList", list: [] });
       }
     }, [state.loginStatus]);
+    
+    return [watchlist, watchlistDispatch];
   }
 
   function loggedIn() {
