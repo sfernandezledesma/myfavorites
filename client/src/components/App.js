@@ -13,18 +13,13 @@ function App(props) {
   const [state, dispatch] = useReducer(globalReducer, {
     loginStatus: "loggedOut",
     name: "",
-    languageCode: "en",
+    languageCode: window.localStorage.getItem("languageCode") || "en",
     errorOpen: false,
     errorDescription: ""
   });
   const [watchlist, watchlistDispatch] = useWatchlist();
 
   useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
-    const savedLangageCode = window.localStorage.getItem("languageCode");
-    console.log("Saved language code", savedLangageCode);
-    if (savedLangageCode) {
-      dispatch({ type: "changeLanguage", languageCode: savedLangageCode });
-    }
     console.log("Intentando entrar con token la primera vez...");
     fetch("/api/getmein")
       .then(response => response.json())
