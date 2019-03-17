@@ -71,7 +71,7 @@ const Item = memo(function Item(props) {
         if (data.id) {
           setDetails(data);
         } else {
-          context.showError(data.status_message);
+          dispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
       .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));

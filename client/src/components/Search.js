@@ -42,6 +42,8 @@ function Search(props) {
   function onSearch(searchTerm) {
     if (searchTerm) {
       props.history.push("/search/" + searchTerm);
+    } else {
+      dispatch({type: "showError", errorDescription: "Ignorar este error"});
     }
   }
 }

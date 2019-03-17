@@ -5,14 +5,14 @@ import * as serviceWorker from './serviceWorker';
 import DarkTheme from './components/DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
-import { BrowserRouter } from 'react-router-dom';
+import GlobalState from './components/GlobalState';
 
 ReactDOM.render(
   <DarkTheme>
     <CssBaseline />
-    <BrowserRouter>
+    <GlobalState>
       <App />
-    </BrowserRouter>
+    </GlobalState>
   </DarkTheme>
   , document.getElementById('root'));
 

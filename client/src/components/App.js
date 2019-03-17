@@ -1,25 +1,17 @@
-import React, { Fragment, useReducer, useEffect, useCallback } from 'react';
-import { AppContext, AppDispatch, AppWatchlist, AppWatchlistDispatch } from "../contexts";
+import React, { Fragment, useEffect, useCallback, useContext } from 'react';
+import { AppContext, AppDispatch } from "../contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
 import TopBar from './TopBar';
 import Register from './Register';
-import { globalReducer, watchlistReducer } from '../reducers';
 import { Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from './Navigation';
-import { includes } from "../utils";
 
 function App(props) {
-  const [state, dispatch] = useReducer(globalReducer, {
-    loginStatus: "loggedOut",
-    name: "",
-    languageCode: window.localStorage.getItem("languageCode") || "en",
-    errorOpen: false,
-    errorDescription: ""
-  });
-  const [watchlist, watchlistDispatch] = useWatchlist();
-  const { errorOpen, errorDescription } = state;
+  const context = useContext(AppContext);
+  const dispatch = useContext(AppDispatch);
+  const { errorOpen, errorDescription } = context;
   console.log("App rendered");
 
   useFirstTimeTokenCheck();
@@ -30,44 +22,36 @@ function App(props) {
   }, [dispatch]);
 
   return (
-    <AppDispatch.Provider value={dispatch}>
-      <AppContext.Provider value={state}>
-        <AppWatchlistDispatch.Provider value={watchlistDispatch}>
-          <AppWatchlist.Provider value={watchlist}>
-
-            <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} />
-            <PrivateRoute exact path="/search/:query?" component={Search} />
-            <Route exact path="/signin" render={(props) => {
-              if (loggedIn()) {
-                const urlToGoNext = props.location.state ? props.location.state.from : "/search";
-                return <Redirect to={urlToGoNext} />;
-              } else {
-                return (
-                  <Fragment>
-                    <TopBar />
-                    <SignIn handleSignIn={handleSignIn} {...props} />
-                  </Fragment>
-                );
-              }
-            }} />
-            <Route exact path="/register" render={(props) => {
-              return (
-                <Fragment>
-                  <TopBar />
-                  <Register handleRegister={handleRegister} {...props} />
-                </Fragment>
-              );
-            }} />
-
-            <ErrorDialog
-              errorOpen={errorOpen}
-              errorDescription={errorDescription}
-              onErrorClose={onErrorClose}
-            />
-          </AppWatchlist.Provider>
-        </AppWatchlistDispatch.Provider>
-      </AppContext.Provider>
-    </AppDispatch.Provider>
+    <Fragment>
+      <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} />
+      <PrivateRoute exact path="/search/:query?" component={Search} />
+      <Route exact path="/signin" render={(props) => {
+        if (loggedIn()) {
+          const urlToGoNext = props.location.state ? props.location.state.from : "/search";
+          return <Redirect to={urlToGoNext} />;
+        } else {
+          return (
+            <Fragment>
+              <TopBar />
+              <SignIn handleSignIn={handleSignIn} {...props} />
+            </Fragment>
+          );
+        }
+      }} />
+      <Route exact path="/register" render={(props) => {
+        return (
+          <Fragment>
+            <TopBar />
+            <Register handleRegister={handleRegister} {...props} />
+          </Fragment>
+        );
+      }} />
+      <ErrorDialog
+        errorOpen={errorOpen}
+        errorDescription={errorDescription}
+        onErrorClose={onErrorClose}
+      />
+    </Fragment>
   );
 
   function useFirstTimeTokenCheck() {
@@ -87,7 +71,7 @@ function App(props) {
 
   function useOnLoggingOut() {
     useEffect(() => { // Borra la cookie del token de autenticacion
-      if (state.loginStatus === "loggingOut") {
+      if (context.loginStatus === "loggingOut") {
         fetch("/api/logout")
           .then(response => response.json())
           .then(data => {
@@ -100,36 +84,11 @@ function App(props) {
           })
           .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
       }
-    }, [state.loginStatus]);
-  }
-
-  function useWatchlist() {
-    const [watchlist, watchlistDispatch] = useReducer(watchlistReducer, {
-      list: [],
-      includes: includes
-    });
-    
-    useEffect(() => { // Descarga la watchlist al logearse y la borra al salir
-      if (state.loginStatus === "loggedIn") {
-        fetch("/api/watchlist/get")
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              console.log("Watchlist fetched:", data.watchlist);
-              watchlistDispatch({ type: "setList", list: data.watchlist });
-            }
-          });
-      } else if (state.loginStatus === "loggingOut") {
-        console.log("Limpiando busqueda y watchlist de usuario...");
-        watchlistDispatch({ type: "setList", list: [] });
-      }
-    }, [state.loginStatus]);
-    
-    return [watchlist, watchlistDispatch];
+    }, [context.loginStatus]);
   }
 
   function loggedIn() {
-    return state.loginStatus === "loggedIn";
+    return context.loginStatus === "loggedIn";
   }
 
   function handleSignIn(event) {

@@ -177,7 +177,7 @@ app.post("/api/watchlist/add", checkToken, (req, res) => {
     });
 });
 
-app.post("/watchlist/remove", checkToken, (req, res) => {
+app.post("/api/watchlist/remove", checkToken, (req, res) => {
   const userId = req.decoded.id;
   const { id } = req.body;
   db("watchlists")
