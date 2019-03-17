@@ -1,11 +1,20 @@
-import React, { memo } from 'react';
+import React, { memo, useContext, useCallback } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Typography
 } from "@material-ui/core";
+import { AppError, AppErrorDispatch } from '../contexts';
 
-const ErrorDialog = memo(function ErrorDialog({ errorOpen, errorDescription, onErrorClose }) {
+function ErrorDialog(props) {
+  const { errorOpen, errorDescription } = useContext(AppError);
+  const errorDispatch = useContext(AppErrorDispatch);
   console.log("Error dialog rendered");
+
+  const onErrorClose = useCallback(() => {
+    console.log("Closing Error Dialog...");
+    errorDispatch({ type: "closeErrorDialog" });
+  }, []);
+
   return (
     <Dialog open={errorOpen} onClose={onErrorClose}>
       <DialogTitle>
@@ -23,6 +32,6 @@ const ErrorDialog = memo(function ErrorDialog({ errorOpen, errorDescription, onE
       </DialogActions>
     </Dialog >
   );
-});
+}
 
-export default ErrorDialog;
+export default memo(ErrorDialog);

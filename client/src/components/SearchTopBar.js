@@ -3,7 +3,7 @@ import TopBar from "./TopBar";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 
-function SearchTopBar({ onSearch, location }) {
+function SearchTopBar({ onSearch }) {
   console.log("SearchTopBar rendered");
   return (
     <TopBar>

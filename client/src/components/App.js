@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useCallback, useContext } from 'react';
-import { AppContext, AppDispatch, AppError, AppErrorDispatch } from "../contexts";
+import React, { Fragment, useEffect, useContext } from 'react';
+import { AppContext, AppDispatch, AppErrorDispatch } from "../contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
@@ -10,18 +10,11 @@ import { PrivateRoute } from './Navigation';
 function App(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
-  const error = useContext(AppError);
   const errorDispatch = useContext(AppErrorDispatch);
-  const { errorOpen, errorDescription } = error;
   console.log("App rendered");
 
   useFirstTimeTokenCheck();
   useOnLoggingOut();
-
-  const onErrorClose = useCallback(() => {
-    console.log("Closing Error Dialog...");
-    errorDispatch({ type: "closeErrorDialog" });
-  }, [errorDispatch]);
 
   return (
     <Fragment>
@@ -38,11 +31,7 @@ function App(props) {
       <Route exact path="/register" render={(props) => {
         return <Register handleRegister={handleRegister} {...props} />;
       }} />
-      <ErrorDialog
-        errorOpen={errorOpen}
-        errorDescription={errorDescription}
-        onErrorClose={onErrorClose}
-      />
+      <ErrorDialog />
     </Fragment>
   );
 
