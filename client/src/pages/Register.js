@@ -1,25 +1,17 @@
-import React, { Fragment, useContext } from 'react';
-import PropTypes from 'prop-types';
-import Avatar from '@material-ui/core/Avatar';
+import React, { Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { AppDispatch } from '../contexts';
-import { Link } from "react-router-dom";
-import TopBar from './TopBar';
+import TopBar from '../components/TopBar';
 
 const styles = theme => ({
   main: {
     width: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: "center",
+    display: 'block', // Fix IE 11 issue.
     marginLeft: theme.spacing.unit * 3,
     marginRight: theme.spacing.unit * 3,
     [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
@@ -46,39 +38,35 @@ const styles = theme => ({
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
-  displayFlexReverseRow: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    justifyContent: "space-between"
-  }
 });
 
-const SignIn = (props) => {
-  const { classes, handleSignIn } = props;
-  const dispatch = useContext(AppDispatch);
-  console.log("SignIn rendered");
-
+const Register = (props) => {
+  const { classes, handleRegister } = props;
+  console.log("Register rendered");
   return (
     <Fragment>
       <TopBar />
-      <main className={classes.main} onSubmit={handleSignIn}>
+      <main className={classes.main} onSubmit={handleRegister}>
         <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Register
         </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">Email Address</InputLabel>
-              <Input id="email" type="email" name="email" autoComplete="email" autoFocus />
+              <InputLabel htmlFor="name">Name</InputLabel>
+              <Input id="name" type="text" name="name" autoFocus autoComplete="off" />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="username">Email Address</InputLabel>
+              <Input id="username" type="email" name="username" autoComplete="off" />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="password">Password</InputLabel>
-              <Input name="password" type="password" id="password" autoComplete="current-password" />
+              <Input name="password" type="password" id="password" autoComplete="new-password" />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="repeat_pass">Repeat Password</InputLabel>
+              <Input name="repeat_pass" type="password" id="repeat_pass" autoComplete="new-password" />
             </FormControl>
             <Button
               type="submit"
@@ -86,28 +74,13 @@ const SignIn = (props) => {
               variant="contained"
               className={classes.submit}
             >
-              Sign in
+              Submit
           </Button>
           </form>
-          <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
-            <Link to="/register">
-              <Button
-                className={classes.submit}
-                variant="contained"
-                onClick={() => dispatch({ type: "changeRoute", route: "register" })}>
-                Register
-            </Button>
-            </Link>
-          </div>
-
         </Paper>
       </main>
     </Fragment>
   );
 };
 
-SignIn.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(Register);

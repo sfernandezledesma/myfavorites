@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppLanguage, AppErrorDispatch } from "../contexts";
+import { AppLanguage, AppErrorDispatch } from "../context/contexts";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
+import { WATCHLIST_ADD, WATCHLIST_REMOVE } from '../context/reducers';
 
 const Item = memo(function Item(props) {
   const languageCode = useContext(AppLanguage);
@@ -148,7 +149,7 @@ const Item = memo(function Item(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          watchlistDispatch({type: "add", item: newItem});
+          watchlistDispatch({type: WATCHLIST_ADD, item: newItem});
         } else {
           errorDispatch({ type: "showError", errorDescription: data.status_message });
         }
@@ -167,7 +168,7 @@ const Item = memo(function Item(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          watchlistDispatch({type: "remove", id: id});
+          watchlistDispatch({type: WATCHLIST_REMOVE, id: id});
         } else {
           errorDispatch({ type: "showError", errorDescription: data.status_message });
         }

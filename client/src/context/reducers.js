@@ -1,12 +1,24 @@
+export const
+  WATCHLIST_SET = "WATCHLIST_SET",
+  WATCHLIST_ADD = "WATCHLIST_ADD",
+  WATCHLIST_REMOVE = "WATCHLIST_REMOVE",
+  ERROR_SHOW = "ERROR_SHOW",
+  ERROR_CLOSE = "ERROR_CLOSE",
+  LOGIN_ACTION_LOGIN = "LOGIN",
+  LOGIN_ACTION_LOGOUT = "LOGOUT",
+  LOGIN_STATUS_FIRST_TIME = "LOGIN_STATUS_FIRST_TIME",
+  LOGIN_STATUS_LOGGEDIN = "LOGIN_STATUS_LOGGEDIN",
+  LOGIN_STATUS_LOGGEDOUT = "LOGIN_STATUS_LOGGEDOUT";
+
 export function watchlistReducer(state, action) {
   switch (action.type) {
-    case "setList": {
+    case WATCHLIST_SET: {
       return { ...state, list: action.list };
     }
-    case "add": {
+    case WATCHLIST_ADD: {
       return { ...state, list: [...state.list, action.item] };
     }
-    case "remove": {
+    case WATCHLIST_REMOVE: {
       return { ...state, list: state.list.filter((value) => (value.id !== action.id)) };
     }
     default: {
@@ -17,13 +29,13 @@ export function watchlistReducer(state, action) {
 
 export function errorReducer(state, action) {
   switch (action.type) {
-    case "showError":
+    case ERROR_SHOW:
       return {
         ...state,
         errorOpen: true,
         errorDescription: action.errorDescription
       };
-    case "closeErrorDialog":
+    case ERROR_CLOSE:
       return {
         ...state,
         errorOpen: false
@@ -34,24 +46,18 @@ export function errorReducer(state, action) {
   }
 }
 
-export function globalReducer(state, action) {
+export function loginReducer(state, action) {
   switch (action.type) {
-    case "login":
+    case LOGIN_ACTION_LOGIN:
       return {
         ...state,
-        loginStatus: "loggedIn",
+        status: LOGIN_STATUS_LOGGEDIN,
         name: action.name
       };
-    case "logout":
+    case LOGIN_ACTION_LOGOUT:
       return {
         ...state,
-        loginStatus: "loggingOut"
-      };
-    case "loggedOut":
-      return {
-        ...state,
-        loginStatus: "loggedOut",
-        name: ""
+        status: LOGIN_STATUS_LOGGEDOUT
       };
     default: {
       return state;

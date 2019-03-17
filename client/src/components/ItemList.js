@@ -1,6 +1,6 @@
 import React, { memo, useContext } from 'react';
 import { Grid, Card } from "@material-ui/core";
-import { AppWatchlist, AppWatchlistDispatch } from "../contexts";
+import { AppWatchlist, AppWatchlistDispatch } from "../context/contexts";
 import Item from "./Item";
 
 const ItemList = memo(({ items }) => {

@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import DarkTheme from './components/DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
-import GlobalState from './components/GlobalState';
+import GlobalState from './context/GlobalState';
 import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(

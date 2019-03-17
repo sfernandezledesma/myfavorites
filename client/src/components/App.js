@@ -1,15 +1,16 @@
 import React, { Fragment, useEffect, useContext } from 'react';
-import { AppContext, AppDispatch, AppErrorDispatch } from "../contexts";
-import Search from './Search';
-import ErrorDialog from './ErrorDialog';
-import SignIn from './SignIn';
-import Register from './Register';
+import { AppLogin, AppLoginDispatch, AppErrorDispatch } from "../context/contexts";
+import Search from '../pages/Search';
+import SignIn from '../pages/SignIn';
+import Register from '../pages/Register';
 import { Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from './Navigation';
+import ErrorDialog from './ErrorDialog';
+import { ERROR_SHOW, LOGIN_ACTION_LOGIN, LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../context/reducers';
 
 function App(props) {
-  const context = useContext(AppContext);
-  const dispatch = useContext(AppDispatch);
+  const loginState = useContext(AppLogin);
+  const loginDispatch = useContext(AppLoginDispatch);
   const errorDispatch = useContext(AppErrorDispatch);
   console.log("App rendered");
 
@@ -36,15 +37,13 @@ function App(props) {
   );
 
   function useFirstTimeTokenCheck() {
-    useEffect(() => { // Esto solo se va a ejecutar una vez, en Mount y Unmount si hubiera cleanup
+    useEffect(() => { // Esto solo ejecuta una vez en Mount y el "return callback" en Unmount
       console.log("Intentando entrar con token la primera vez...");
       fetch("/api/getmein")
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            dispatch({ type: "login", name: data.name });
-          } else {
-            dispatch({ type: "signin", signinOpen: true });
+            loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
           }
         });
     }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
@@ -52,24 +51,23 @@ function App(props) {
 
   function useOnLoggingOut() {
     useEffect(() => { // Borra la cookie del token de autenticacion
-      if (context.loginStatus === "loggingOut") {
+      if (loginState.status === LOGIN_STATUS_LOGGEDOUT) {
         fetch("/api/logout")
           .then(response => response.json())
           .then(data => {
             if (data.success) {
               console.log("Successfully logged out.");
-              dispatch({ type: "loggedOut" });
             } else {
-              errorDispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
+              errorDispatch({ type: ERROR_SHOW, errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
             }
           })
-          .catch(err => errorDispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
+          .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Could not reach server. Refresh and try logging out again." }));
       }
-    }, [context.loginStatus]);
+    }, [loginState.status]);
   }
 
   function loggedIn() {
-    return context.loginStatus === "loggedIn";
+    return loginState.status === LOGIN_STATUS_LOGGEDIN;
   }
 
   function handleSignIn(event) {
@@ -83,9 +81,9 @@ function App(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          dispatch({ type: "login", name: data.name });
+          loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
         } else {
-          errorDispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
         }
       });
   }
@@ -93,7 +91,7 @@ function App(props) {
   function handleRegister(event) {
     event.preventDefault();
     if (event.target.password.value !== event.target.repeat_pass.value) {
-      errorDispatch({ type: "showError", errorDescription: "Passwords don't match." });
+      errorDispatch({ type: ERROR_SHOW, errorDescription: "Passwords don't match." });
     } else {
       const body = {
         name: event.target.name.value,
@@ -108,7 +106,7 @@ function App(props) {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            dispatch({ type: "login", name: data.name });
+            loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
           }
         });
     }

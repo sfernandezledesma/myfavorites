@@ -3,7 +3,8 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Typography
 } from "@material-ui/core";
-import { AppError, AppErrorDispatch } from '../contexts';
+import { AppError, AppErrorDispatch } from '../context/contexts';
+import { ERROR_CLOSE } from '../context/reducers';
 
 function ErrorDialog(props) {
   const { errorOpen, errorDescription } = useContext(AppError);
@@ -12,7 +13,7 @@ function ErrorDialog(props) {
 
   const onErrorClose = useCallback(() => {
     console.log("Closing Error Dialog...");
-    errorDispatch({ type: "closeErrorDialog" });
+    errorDispatch({ type: ERROR_CLOSE });
   }, []);
 
   return (

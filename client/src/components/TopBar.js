@@ -3,24 +3,25 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
-import { AppContext, AppDispatch } from '../contexts';
+import { AppLogin, AppLoginDispatch } from '../context/contexts';
 import { Button } from '@material-ui/core';
 import { Link, withRouter } from "react-router-dom";
+import { LOGIN_STATUS_LOGGEDIN, LOGIN_ACTION_LOGOUT } from '../context/reducers';
 
 function TopBar({ children, location }) {
-  const context = useContext(AppContext);
-  const dispatch = useContext(AppDispatch);
+  const loginState = useContext(AppLogin);
+  const loginDispatch = useContext(AppLoginDispatch);
   console.log("TopBar rendered");
 
   useEffect(() => {
     document.title = "MyFav" + (loggedIn() ? " | Welcome back!" : "");
-  }, [context.loginStatus]);
+  }, [loginState.status]);
 
   return (
     <AppBar position="sticky" color="default">
       <Toolbar>
         <Typography color="inherit">
-          {loggedIn() ? context.name : "MyFavorites"}
+          {loggedIn() ? loginState.name : "MyFavorites"}
         </Typography>
         <MenuLanguage />
         {children}
@@ -30,11 +31,11 @@ function TopBar({ children, location }) {
   );
 
   function onClickLogout() {
-    dispatch({ type: "logout" });
+    loginDispatch({ type: LOGIN_ACTION_LOGOUT });
   }
 
   function loggedIn() {
-    return context.loginStatus === "loggedIn";
+    return loginState.status === LOGIN_STATUS_LOGGEDIN;
   }
 
   function renderNavButtons() {

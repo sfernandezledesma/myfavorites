@@ -1,11 +1,12 @@
 import React, { Fragment, useContext, useState, useEffect, memo, useCallback } from 'react';
-import ItemList from "./ItemList";
-import SearchTopBar from './SearchTopBar';
-import { AppDispatch, AppLanguage, AppErrorDispatch } from '../contexts';
+import ItemList from "../components/ItemList";
+import SearchTopBar from '../components/SearchTopBar';
+import { AppLoginDispatch, AppLanguage, AppErrorDispatch } from '../context/contexts';
+import { ERROR_SHOW, LOGIN_ACTION_LOGOUT } from '../context/reducers';
 
 function Search(props) {
   const languageCode = useContext(AppLanguage);
-  const dispatch = useContext(AppDispatch);
+  const dispatch = useContext(AppLoginDispatch);
   const errorDispatch = useContext(AppErrorDispatch);
   const [searchResults, setSearchResults] = useState([]);
   const { query } = props.match.params;
@@ -31,20 +32,20 @@ function Search(props) {
         if (data.page) {
           setSearchResults(data.results);
         } else {
-          errorDispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
           if (data.status_message.toLowerCase().includes("token")) {
-            dispatch({type: "logout"});
+            dispatch({type: LOGIN_ACTION_LOGOUT});
           }
         }
       })
-      .catch(err => errorDispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Error connecting with API" }));
   }
 
   function onSearch(searchTerm) {
     if (searchTerm) {
       props.history.push("/search/" + searchTerm);
     } else {
-      errorDispatch({type: "showError", errorDescription: "Ignorar este error"});
+      errorDispatch({type: ERROR_SHOW, errorDescription: "Ignorar este error"});
     }
   }
 }
