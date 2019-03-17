@@ -3,7 +3,7 @@ import TopBar from "./TopBar";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 
-const SearchTopBar = memo(({ onSearch }) => {
+function SearchTopBar({ onSearch, location }) {
   console.log("SearchTopBar rendered");
   return (
     <TopBar>
@@ -21,6 +21,6 @@ const SearchTopBar = memo(({ onSearch }) => {
     if (event.key === 'Enter')
       return onSearch(event.target.value);
   }
-});
+};
 
-export default SearchTopBar;
+export default memo(SearchTopBar);

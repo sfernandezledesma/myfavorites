@@ -15,13 +15,8 @@ export function watchlistReducer(state, action) {
   }
 }
 
-export function globalReducer(state, action) {
+export function errorReducer(state, action) {
   switch (action.type) {
-    case "changeLanguage":
-      return {
-        ...state,
-        languageCode: action.languageCode
-      };
     case "showError":
       return {
         ...state,
@@ -33,6 +28,14 @@ export function globalReducer(state, action) {
         ...state,
         errorOpen: false
       };
+    default: {
+      return state;
+    }
+  }
+}
+
+export function globalReducer(state, action) {
+  switch (action.type) {
     case "login":
       return {
         ...state,
@@ -50,7 +53,8 @@ export function globalReducer(state, action) {
         loginStatus: "loggedOut",
         name: ""
       };
-    default:
+    default: {
       return state;
+    }
   }
 }

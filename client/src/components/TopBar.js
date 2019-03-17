@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, Fragment } from 'react';
+import React, { useContext, useEffect, Fragment, memo } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
 import { AppContext, AppDispatch } from '../contexts';
 import { Button } from '@material-ui/core';
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router";
+import { Link, withRouter } from "react-router-dom";
 
-const TopBar = withRouter((props) => {
+function TopBar({ children, location }) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
   console.log("TopBar rendered");
@@ -24,7 +23,7 @@ const TopBar = withRouter((props) => {
           {loggedIn() ? context.name : "MyFavorites"}
         </Typography>
         <MenuLanguage />
-        {props.children}
+        {children}
         {renderNavButtons()}
       </Toolbar>
     </AppBar>
@@ -39,7 +38,7 @@ const TopBar = withRouter((props) => {
   }
 
   function renderNavButtons() {
-    const path = props.location.pathname;
+    const path = location.pathname;
     if (loggedIn()) {
       return (
         <Fragment>
@@ -56,6 +55,6 @@ const TopBar = withRouter((props) => {
       );
     }
   }
-});
+}
 
-export default TopBar;
+export default memo(withRouter(TopBar));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
@@ -6,6 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
+import TopBar from './TopBar';
 
 const styles = theme => ({
   main: {
@@ -43,39 +44,42 @@ const Register = (props) => {
   const { classes, handleRegister } = props;
   console.log("Register rendered");
   return (
-    <main className={classes.main} onSubmit={handleRegister}>
-      <Paper className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          Register
+    <Fragment>
+      <TopBar />
+      <main className={classes.main} onSubmit={handleRegister}>
+        <Paper className={classes.paper}>
+          <Typography component="h1" variant="h5">
+            Register
         </Typography>
-        <form className={classes.form}>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="name">Name</InputLabel>
-            <Input id="name" type="text" name="name" autoFocus autoComplete="off" />
-          </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="username">Email Address</InputLabel>
-            <Input id="username" type="email" name="username" autoComplete="off" />
-          </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="new-password" />
-          </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="repeat_pass">Repeat Password</InputLabel>
-            <Input name="repeat_pass" type="password" id="repeat_pass" autoComplete="new-password" />
-          </FormControl>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-          >
-            Submit
+          <form className={classes.form}>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="name">Name</InputLabel>
+              <Input id="name" type="text" name="name" autoFocus autoComplete="off" />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="username">Email Address</InputLabel>
+              <Input id="username" type="email" name="username" autoComplete="off" />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input name="password" type="password" id="password" autoComplete="new-password" />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="repeat_pass">Repeat Password</InputLabel>
+              <Input name="repeat_pass" type="password" id="repeat_pass" autoComplete="new-password" />
+            </FormControl>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              className={classes.submit}
+            >
+              Submit
           </Button>
-        </form>
-      </Paper>
-    </main>
+          </form>
+        </Paper>
+      </main>
+    </Fragment>
   );
 };
 

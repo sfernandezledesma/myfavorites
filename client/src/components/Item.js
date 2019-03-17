@@ -1,10 +1,10 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppContext, AppDispatch } from "../contexts";
+import { AppLanguage, AppErrorDispatch } from "../contexts";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
 
 const Item = memo(function Item(props) {
-  const context = useContext(AppContext);
-  const dispatch = useContext(AppDispatch);
+  const languageCode = useContext(AppLanguage);
+  const errorDispatch = useContext(AppErrorDispatch);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [details, setDetails] = useState({});
   const { watchlistDispatch, isOnWatchlist, item } = props;
@@ -15,7 +15,7 @@ const Item = memo(function Item(props) {
       console.log("Item details re-fetched");
       fetchDetails();
     }
-  }, [context.languageCode]);
+  }, [languageCode]);
 
   if (!detailsOpen) {
     return (
@@ -64,17 +64,17 @@ const Item = memo(function Item(props) {
 
   function fetchDetails() {
     const { id, media_type } = props.item;
-    return fetch(`/api/id/${context.languageCode}/${media_type}/${id}`)
+    return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.id) {
           setDetails(data);
         } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
-      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: "showError", errorDescription: "Error connecting with API" }));
   }
 
   async function onDetailsOpen() {
@@ -150,10 +150,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: "add", item: newItem});
         } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
-      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: "showError", errorDescription: err.toString() }));
   }
 
   function onRemove() {
@@ -169,10 +169,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: "remove", id: id});
         } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: "showError", errorDescription: data.status_message });
         }
       })
-      .catch(err => dispatch({ type: "showError", errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: "showError", errorDescription: err.toString() }));
   }
 });
 

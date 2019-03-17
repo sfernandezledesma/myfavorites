@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { Fragment, useContext } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { AppDispatch } from '../contexts';
 import { Link } from "react-router-dom";
+import TopBar from './TopBar';
 
 const styles = theme => ({
   main: {
@@ -58,47 +59,50 @@ const SignIn = (props) => {
   const { classes, handleSignIn } = props;
   const dispatch = useContext(AppDispatch);
   console.log("SignIn rendered");
-  
-  return (
-    <main className={classes.main} onSubmit={handleSignIn}>
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form}>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" type="email" name="email" autoComplete="email" autoFocus />
-          </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" />
-          </FormControl>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            className={classes.submit}
-          >
-            Sign in
-          </Button>
-        </form>
-        <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
-          <Link to="/register">
-            <Button
-              className={classes.submit}
-              variant="contained"
-              onClick={() => dispatch({ type: "changeRoute", route: "register" })}>
-              Register
-            </Button>
-          </Link>
-        </div>
 
-      </Paper>
-    </main>
+  return (
+    <Fragment>
+      <TopBar />
+      <main className={classes.main} onSubmit={handleSignIn}>
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+        </Typography>
+          <form className={classes.form}>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="email">Email Address</InputLabel>
+              <Input id="email" type="email" name="email" autoComplete="email" autoFocus />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input name="password" type="password" id="password" autoComplete="current-password" />
+            </FormControl>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              className={classes.submit}
+            >
+              Sign in
+          </Button>
+          </form>
+          <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
+            <Link to="/register">
+              <Button
+                className={classes.submit}
+                variant="contained"
+                onClick={() => dispatch({ type: "changeRoute", route: "register" })}>
+                Register
+            </Button>
+            </Link>
+          </div>
+
+        </Paper>
+      </main>
+    </Fragment>
   );
 };
 

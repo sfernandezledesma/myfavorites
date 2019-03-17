@@ -1,7 +1,7 @@
 import React, { useContext, useState, memo, useEffect } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
-import { AppDispatch, AppContext } from '../contexts';
+import { AppLanguage, AppLanguageSet } from '../contexts';
 
 const options = [
   { name: "English", code: "en" },
@@ -9,25 +9,15 @@ const options = [
   { name: "Svenska", code: "sv" }
 ];
 
-function indexOfLanguageCode(languageCode) {
-  console.log("Index of language code calculated");
-  for (let i = 0; i < options.length; i++) {
-    if (options[i].code === languageCode) {
-      return i;
-    }
-  }
-  return 0;
-}
-
 const MenuLanguage = memo((props) => {
-  const dispatch = useContext(AppDispatch);
-  const context = useContext(AppContext);
+  const languageCode = useContext(AppLanguage);
+  const setLanguageCode = useContext(AppLanguageSet);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   console.log("MenuLanguage rendered");
 
   useEffect(() => {
-    setSelectedIndex(indexOfLanguageCode(context.languageCode));
+    setSelectedIndex(indexOfLanguageCode(languageCode));
   }, []);
 
   return (
@@ -54,7 +44,7 @@ const MenuLanguage = memo((props) => {
     </div>
   );
 
-  function handleClickButton(event)  {
+  function handleClickButton(event) {
     setAnchorEl(event.currentTarget);
   }
 
@@ -63,7 +53,7 @@ const MenuLanguage = memo((props) => {
       setSelectedIndex(index);
       setAnchorEl(null);
       const languageCode = options[index].code;
-      dispatch({ type: "changeLanguage", languageCode: languageCode });
+      setLanguageCode(languageCode);
       window.localStorage.setItem("languageCode", languageCode);
     }
   }
@@ -74,3 +64,13 @@ const MenuLanguage = memo((props) => {
 });
 
 export default MenuLanguage;
+
+function indexOfLanguageCode(languageCode) {
+  console.log("Index of language code calculated");
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].code === languageCode) {
+      return i;
+    }
+  }
+  return 0;
+}

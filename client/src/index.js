@@ -6,13 +6,16 @@ import DarkTheme from './components/DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
 import GlobalState from './components/GlobalState';
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
   <DarkTheme>
     <CssBaseline />
-    <GlobalState>
-      <App />
-    </GlobalState>
+    <BrowserRouter>
+      <GlobalState>
+        <App />
+      </GlobalState>
+    </BrowserRouter>
   </DarkTheme>
   , document.getElementById('root'));
 

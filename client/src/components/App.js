@@ -1,9 +1,8 @@
 import React, { Fragment, useEffect, useCallback, useContext } from 'react';
-import { AppContext, AppDispatch } from "../contexts";
+import { AppContext, AppDispatch, AppError, AppErrorDispatch } from "../contexts";
 import Search from './Search';
 import ErrorDialog from './ErrorDialog';
 import SignIn from './SignIn';
-import TopBar from './TopBar';
 import Register from './Register';
 import { Route, Redirect } from 'react-router-dom';
 import { PrivateRoute } from './Navigation';
@@ -11,15 +10,18 @@ import { PrivateRoute } from './Navigation';
 function App(props) {
   const context = useContext(AppContext);
   const dispatch = useContext(AppDispatch);
-  const { errorOpen, errorDescription } = context;
+  const error = useContext(AppError);
+  const errorDispatch = useContext(AppErrorDispatch);
+  const { errorOpen, errorDescription } = error;
   console.log("App rendered");
 
   useFirstTimeTokenCheck();
   useOnLoggingOut();
 
   const onErrorClose = useCallback(() => {
-    dispatch({ type: "closeErrorDialog" });
-  }, [dispatch]);
+    console.log("Closing Error Dialog...");
+    errorDispatch({ type: "closeErrorDialog" });
+  }, [errorDispatch]);
 
   return (
     <Fragment>
@@ -30,21 +32,11 @@ function App(props) {
           const urlToGoNext = props.location.state ? props.location.state.from : "/search";
           return <Redirect to={urlToGoNext} />;
         } else {
-          return (
-            <Fragment>
-              <TopBar />
-              <SignIn handleSignIn={handleSignIn} {...props} />
-            </Fragment>
-          );
+          return <SignIn handleSignIn={handleSignIn} {...props} />;
         }
       }} />
       <Route exact path="/register" render={(props) => {
-        return (
-          <Fragment>
-            <TopBar />
-            <Register handleRegister={handleRegister} {...props} />
-          </Fragment>
-        );
+        return <Register handleRegister={handleRegister} {...props} />;
       }} />
       <ErrorDialog
         errorOpen={errorOpen}
@@ -79,10 +71,10 @@ function App(props) {
               console.log("Successfully logged out.");
               dispatch({ type: "loggedOut" });
             } else {
-              dispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
+              errorDispatch({ type: "showError", errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
             }
           })
-          .catch(err => dispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
+          .catch(err => errorDispatch({ type: "showError", errorDescription: "Could not reach server. Refresh and try logging out again." }));
       }
     }, [context.loginStatus]);
   }
@@ -104,7 +96,7 @@ function App(props) {
         if (data.success) {
           dispatch({ type: "login", name: data.name });
         } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: "showError", errorDescription: data.status_message });
         }
       });
   }
@@ -112,7 +104,7 @@ function App(props) {
   function handleRegister(event) {
     event.preventDefault();
     if (event.target.password.value !== event.target.repeat_pass.value) {
-      dispatch({ type: "showError", errorDescription: "Passwords don't match." });
+      errorDispatch({ type: "showError", errorDescription: "Passwords don't match." });
     } else {
       const body = {
         name: event.target.name.value,

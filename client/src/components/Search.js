@@ -1,11 +1,12 @@
-import React, { Fragment, useContext, useState, useEffect } from 'react';
+import React, { Fragment, useContext, useState, useEffect, memo, useCallback } from 'react';
 import ItemList from "./ItemList";
 import SearchTopBar from './SearchTopBar';
-import { AppContext, AppDispatch } from '../contexts';
+import { AppDispatch, AppLanguage, AppErrorDispatch } from '../contexts';
 
 function Search(props) {
-  const context = useContext(AppContext);
+  const languageCode = useContext(AppLanguage);
   const dispatch = useContext(AppDispatch);
+  const errorDispatch = useContext(AppErrorDispatch);
   const [searchResults, setSearchResults] = useState([]);
   const { query } = props.match.params;
   console.log("Search Component rendered");
@@ -13,39 +14,39 @@ function Search(props) {
   useEffect(() => {
     if (query)
       search(query);
-  }, [query, context.languageCode]);
+  }, [query, languageCode]);
 
   return (
     <Fragment>
-      <SearchTopBar onSearch={onSearch} />
+      <SearchTopBar onSearch={useCallback(onSearch, [])} />
       <ItemList items={searchResults} />
     </Fragment>
   );
 
   function search(searchTerm) {
-    fetch(`/api/search/${context.languageCode}/${searchTerm}`)
+    fetch(`/api/search/${languageCode}/${searchTerm}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.page) {
           setSearchResults(data.results);
         } else {
-          dispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: "showError", errorDescription: data.status_message });
           if (data.status_message.toLowerCase().includes("token")) {
             dispatch({type: "logout"});
           }
         }
       })
-      .catch(err => dispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: "showError", errorDescription: "Error connecting with API" }));
   }
 
   function onSearch(searchTerm) {
     if (searchTerm) {
       props.history.push("/search/" + searchTerm);
     } else {
-      dispatch({type: "showError", errorDescription: "Ignorar este error"});
+      errorDispatch({type: "showError", errorDescription: "Ignorar este error"});
     }
   }
 }
 
-export default Search;
+export default memo(Search);
