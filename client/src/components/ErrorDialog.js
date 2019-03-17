@@ -7,7 +7,7 @@ import { AppError, AppErrorDispatch } from '../context/contexts';
 import { ERROR_CLOSE } from '../context/reducers';
 
 function ErrorDialog(props) {
-  const { errorOpen, errorDescription } = useContext(AppError);
+  const { open, message } = useContext(AppError);
   const errorDispatch = useContext(AppErrorDispatch);
   console.log("Error dialog rendered");
 
@@ -17,13 +17,13 @@ function ErrorDialog(props) {
   }, []);
 
   return (
-    <Dialog open={errorOpen} onClose={onErrorClose}>
+    <Dialog open={open} onClose={onErrorClose}>
       <DialogTitle>
         Error
       </DialogTitle>
       <DialogContent>
         <Typography variant="subtitle2">
-          {errorDescription}
+          {message}
         </Typography>
       </DialogContent>
       <DialogActions>

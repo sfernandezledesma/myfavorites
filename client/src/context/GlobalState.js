@@ -15,8 +15,8 @@ export default function GlobalState(props) {
     name: ""
   });
   const [error, errorDispatch] = useReducer(errorReducer, {
-    errorOpen: false,
-    errorDescription: ""
+    open: false,
+    message: ""
   });
   const [watchlist, watchlistDispatch] = useWatchlist();
   const [languageCode, setLanguageCode] = useState(initialLanguageCode || "en");

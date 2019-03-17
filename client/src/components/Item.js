@@ -72,10 +72,10 @@ const Item = memo(function Item(props) {
         if (data.id) {
           setDetails(data);
         } else {
-          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Error connecting with API" }));
   }
 
   async function onDetailsOpen() {
@@ -151,10 +151,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: WATCHLIST_ADD, item: newItem});
         } else {
-          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, message: err.toString() }));
   }
 
   function onRemove() {
@@ -170,10 +170,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: WATCHLIST_REMOVE, id: id});
         } else {
-          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, message: err.toString() }));
   }
 });
 

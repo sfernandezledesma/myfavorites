@@ -32,20 +32,20 @@ function Search(props) {
         if (data.page) {
           setSearchResults(data.results);
         } else {
-          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
           if (data.status_message.toLowerCase().includes("token")) {
             loginDispatch({type: LOGIN_ACTION_LOGOUT});
           }
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Error connecting with API" }));
   }
 
   function onSearch(searchTerm) {
     if (searchTerm) {
       props.history.push("/search/" + searchTerm);
     } else {
-      errorDispatch({type: ERROR_SHOW, errorDescription: "Ignorar este error"});
+      errorDispatch({type: ERROR_SHOW, message: "Ignorar este error"});
     }
   }
 }

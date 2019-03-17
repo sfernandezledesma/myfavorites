@@ -32,13 +32,13 @@ export function errorReducer(state, action) {
     case ERROR_SHOW:
       return {
         ...state,
-        errorOpen: true,
-        errorDescription: action.errorDescription
+        open: true,
+        message: action.message
       };
     case ERROR_CLOSE:
       return {
         ...state,
-        errorOpen: false
+        open: false
       };
     default: {
       return state;

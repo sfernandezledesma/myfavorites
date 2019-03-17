@@ -58,10 +58,10 @@ function App(props) {
             if (data.success) {
               console.log("Successfully logged out.");
             } else {
-              errorDispatch({ type: ERROR_SHOW, errorDescription: "Could not clean authentication cookie. Refresh and try logging out again." });
+              errorDispatch({ type: ERROR_SHOW, message: "Could not clean authentication cookie. Refresh and try logging out again." });
             }
           })
-          .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Could not reach server. Refresh and try logging out again." }));
+          .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Could not reach server. Refresh and try logging out again." }));
       }
     }, [loginState.status]);
   }
@@ -83,7 +83,7 @@ function App(props) {
         if (data.success) {
           loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
         } else {
-          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
         }
       });
   }
@@ -91,7 +91,7 @@ function App(props) {
   function handleRegister(event) {
     event.preventDefault();
     if (event.target.password.value !== event.target.repeat_pass.value) {
-      errorDispatch({ type: ERROR_SHOW, errorDescription: "Passwords don't match." });
+      errorDispatch({ type: ERROR_SHOW, message: "Passwords don't match." });
     } else {
       const body = {
         name: event.target.name.value,
