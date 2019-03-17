@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
 import { AppLanguage, AppErrorDispatch } from "../context/contexts";
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
-import { WATCHLIST_ADD, WATCHLIST_REMOVE } from '../context/reducers';
+import { WATCHLIST_ADD, WATCHLIST_REMOVE, ERROR_SHOW } from '../context/reducers';
 
 const Item = memo(function Item(props) {
   const languageCode = useContext(AppLanguage);
@@ -72,10 +72,10 @@ const Item = memo(function Item(props) {
         if (data.id) {
           setDetails(data);
         } else {
-          errorDispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: "showError", errorDescription: "Error connecting with API" }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: "Error connecting with API" }));
   }
 
   async function onDetailsOpen() {
@@ -151,10 +151,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: WATCHLIST_ADD, item: newItem});
         } else {
-          errorDispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: "showError", errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: err.toString() }));
   }
 
   function onRemove() {
@@ -170,10 +170,10 @@ const Item = memo(function Item(props) {
         if (data.success) {
           watchlistDispatch({type: WATCHLIST_REMOVE, id: id});
         } else {
-          errorDispatch({ type: "showError", errorDescription: data.status_message });
+          errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
         }
       })
-      .catch(err => errorDispatch({ type: "showError", errorDescription: err.toString() }));
+      .catch(err => errorDispatch({ type: ERROR_SHOW, errorDescription: err.toString() }));
   }
 });
 
