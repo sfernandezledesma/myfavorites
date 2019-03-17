@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -9,7 +9,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { AppLoginDispatch } from '../context/contexts';
 import { Link } from "react-router-dom";
 import TopBar from '../components/TopBar';
 
@@ -57,7 +56,6 @@ const styles = theme => ({
 
 const SignIn = (props) => {
   const { classes, handleSignIn } = props;
-  const loginDispatch = useContext(AppLoginDispatch);
   console.log("SignIn rendered");
 
   return (
@@ -91,12 +89,9 @@ const SignIn = (props) => {
           </form>
           <div className={classes.displayFlexReverseRow} style={{ marginTop: "10%" }}>
             <Link to="/register">
-              <Button
-                className={classes.submit}
-                variant="contained"
-                onClick={() => loginDispatch({ type: "changeRoute", route: "register" })}>
+              <Button className={classes.submit} variant="contained">
                 Register
-            </Button>
+              </Button>
             </Link>
           </div>
 

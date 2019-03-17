@@ -6,7 +6,7 @@ import { ERROR_SHOW, LOGIN_ACTION_LOGOUT } from '../context/reducers';
 
 function Search(props) {
   const languageCode = useContext(AppLanguage);
-  const dispatch = useContext(AppLoginDispatch);
+  const loginDispatch = useContext(AppLoginDispatch);
   const errorDispatch = useContext(AppErrorDispatch);
   const [searchResults, setSearchResults] = useState([]);
   const { query } = props.match.params;
@@ -34,7 +34,7 @@ function Search(props) {
         } else {
           errorDispatch({ type: ERROR_SHOW, errorDescription: data.status_message });
           if (data.status_message.toLowerCase().includes("token")) {
-            dispatch({type: LOGIN_ACTION_LOGOUT});
+            loginDispatch({type: LOGIN_ACTION_LOGOUT});
           }
         }
       })
