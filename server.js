@@ -1,3 +1,7 @@
+/* The .env file should have these variables defined for development:
+TMDB_API_KEY, JWT_SECRET, DEV_DB_URL, DEV_DB_USER, DEV_DB_PASSWORD, DEV_DB_NAME
+For production, these variables are needed on the .env or set directly on Heroku:
+TMDB_API_KEY, JWT_SECRET, DATABASE_URL */
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
