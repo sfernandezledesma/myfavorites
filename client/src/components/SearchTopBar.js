@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import TopBar from "./TopBar";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
@@ -23,4 +23,4 @@ function SearchTopBar({ onSearch }) {
   }
 };
 
-export default memo(SearchTopBar);
+export default SearchTopBar;

@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, Fragment, memo } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
-import { AppLogin, AppLoginDispatch } from '../context/contexts';
 import { Button } from '@material-ui/core';
 import { Link, withRouter } from "react-router-dom";
-import { LOGIN_STATUS_LOGGEDIN, LOGIN_ACTION_LOGOUT } from '../context/reducers';
+import { LOGIN_STATUS_LOGGEDIN } from '../reducers';
+import { connect } from 'react-redux';
+import { logout } from '../actions/loginActions';
 
-function TopBar({ children, location }) {
-  const loginState = useContext(AppLogin);
-  const loginDispatch = useContext(AppLoginDispatch);
+function TopBar({ children, location, loginState, logout }) {
   console.log("TopBar rendered");
 
   useEffect(() => {
@@ -31,7 +30,7 @@ function TopBar({ children, location }) {
   );
 
   function onClickLogout() {
-    loginDispatch({ type: LOGIN_ACTION_LOGOUT });
+    logout();
   }
 
   function loggedIn() {
@@ -58,4 +57,12 @@ function TopBar({ children, location }) {
   }
 }
 
-export default memo(withRouter(TopBar));
+const mapStateToProps = (state) => {
+  return {
+    loginState: state.loginReducer
+  };
+};
+
+const mapDispatchToProps = { logout };
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TopBar));

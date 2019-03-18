@@ -1,23 +1,16 @@
-import React, { memo, useContext, useCallback } from 'react';
+import React from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Typography
 } from "@material-ui/core";
-import { AppError, AppErrorDispatch } from '../context/contexts';
-import { ERROR_CLOSE } from '../context/reducers';
+import { connect } from 'react-redux';
+import { closeError} from '../actions/errorActions';
 
-function ErrorDialog(props) {
-  const { open, message } = useContext(AppError);
-  const errorDispatch = useContext(AppErrorDispatch);
+function ErrorDialog({ open, message, closeError }) {
   console.log("Error dialog rendered");
 
-  const onErrorClose = useCallback(() => {
-    console.log("Closing Error Dialog...");
-    errorDispatch({ type: ERROR_CLOSE });
-  }, []);
-
   return (
-    <Dialog open={open} onClose={onErrorClose}>
+    <Dialog open={open} onClose={closeError}>
       <DialogTitle>
         Error
       </DialogTitle>
@@ -27,7 +20,7 @@ function ErrorDialog(props) {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onErrorClose}>
+        <Button onClick={closeError}>
           Close
         </Button>
       </DialogActions>
@@ -35,4 +28,14 @@ function ErrorDialog(props) {
   );
 }
 
-export default memo(ErrorDialog);
+const mapStateToProps = (state) => {
+  return {
+    open: state.errorReducer.open,
+    message: state.errorReducer.message
+  };
+};
+const mapDispatchToProps = {
+  closeError
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ErrorDialog);

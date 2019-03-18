@@ -1,14 +1,17 @@
-import React, { Fragment, useState, useContext, useEffect, memo } from 'react';
-import { AppLanguage, AppErrorDispatch } from "../context/contexts";
+import React, { Fragment, useState, useEffect } from 'react';
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
-import { WATCHLIST_ADD, WATCHLIST_REMOVE, ERROR_SHOW } from '../context/reducers';
+import { showError } from '../actions/errorActions';
+import { addToWatchlist, removeFromWatchlist } from '../actions/watchlistActions';
+import { connect } from 'react-redux';
 
-const Item = memo(function Item(props) {
-  const languageCode = useContext(AppLanguage);
-  const errorDispatch = useContext(AppErrorDispatch);
+const mapStateToProps = state => {
+  return { languageCode: state.languageReducer };
+};
+const mapDispatchToProps = { showError, addToWatchlist, removeFromWatchlist };
+
+function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, removeFromWatchlist }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [details, setDetails] = useState({});
-  const { watchlistDispatch, isOnWatchlist, item } = props;
   console.log("Item rendered");
 
   useEffect(() => {
@@ -64,7 +67,7 @@ const Item = memo(function Item(props) {
   }
 
   function fetchDetails() {
-    const { id, media_type } = props.item;
+    const { id, media_type } = item;
     return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
       .then(response => response.json())
       .then(data => {
@@ -72,14 +75,14 @@ const Item = memo(function Item(props) {
         if (data.id) {
           setDetails(data);
         } else {
-          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
+          showError(data.status_message);
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Error connecting with API" }));
+      .catch(err => showError("Error connecting with API"));
   }
 
   async function onDetailsOpen() {
-    const { id } = props.item;
+    const { id } = item;
     if (details.id === id) {
       // No hace faltar hacer nada
     } else {
@@ -93,7 +96,6 @@ const Item = memo(function Item(props) {
   }
 
   function renderDetailsCardContent() {
-    const { item } = props;
     if (item.media_type === "person") {
       return (
         <Fragment>
@@ -138,8 +140,8 @@ const Item = memo(function Item(props) {
   }
 
   function onAdd() {
-    const name = props.item.name || props.item.title;
-    const { id } = props.item;
+    const name = item.name || item.title;
+    const { id } = item;
     const newItem = { name: name, id: id };
     fetch("/api/watchlist/add", {
       method: "post",
@@ -149,16 +151,16 @@ const Item = memo(function Item(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          watchlistDispatch({type: WATCHLIST_ADD, item: newItem});
+          addToWatchlist(newItem);
         } else {
-          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
+          showError(data.status_message);
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, message: err.toString() }));
+      .catch(err => showError(err.toString()));
   }
 
   function onRemove() {
-    const { id } = props.item;
+    const { id } = item;
     const body = { id: id };
     fetch("/api/watchlist/remove", {
       method: "post",
@@ -168,13 +170,13 @@ const Item = memo(function Item(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          watchlistDispatch({type: WATCHLIST_REMOVE, id: id});
+          removeFromWatchlist(id);
         } else {
-          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
+          showError(data.status_message);
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, message: err.toString() }));
+      .catch(err => showError(err.toString()));
   }
-});
+}
 
-export default Item;
+export default connect(mapStateToProps, mapDispatchToProps)(Item);

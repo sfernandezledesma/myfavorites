@@ -5,17 +5,18 @@ import * as serviceWorker from './serviceWorker';
 import DarkTheme from './components/DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
-import GlobalState from './context/GlobalState';
 import { BrowserRouter } from 'react-router-dom';
+import { store } from './store';
+import { Provider } from 'react-redux';
 
 ReactDOM.render(
   <DarkTheme>
     <CssBaseline />
-    <BrowserRouter>
-      <GlobalState>
+    <Provider store={store}>
+      <BrowserRouter>
         <App />
-      </GlobalState>
-    </BrowserRouter>
+      </BrowserRouter>
+    </Provider>
   </DarkTheme>
   , document.getElementById('root'));
 

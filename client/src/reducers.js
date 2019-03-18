@@ -1,3 +1,5 @@
+import { includes, initialLanguageCode } from "./utils";
+
 export const
   WATCHLIST_SET = "WATCHLIST_SET",
   WATCHLIST_ADD = "WATCHLIST_ADD",
@@ -8,9 +10,21 @@ export const
   LOGIN_ACTION_LOGOUT = "LOGIN_ACTION_LOGOUT",
   LOGIN_STATUS_FIRST_TIME = "LOGIN_STATUS_FIRST_TIME",
   LOGIN_STATUS_LOGGEDIN = "LOGIN_STATUS_LOGGEDIN",
-  LOGIN_STATUS_LOGGEDOUT = "LOGIN_STATUS_LOGGEDOUT";
+  LOGIN_STATUS_LOGGEDOUT = "LOGIN_STATUS_LOGGEDOUT",
+  LANGUAGE_SET = "LANGUAGE_SET";
 
-export function watchlistReducer(state, action) {
+export function languageReducer(state = initialLanguageCode, action) {
+  switch (action.type) {
+    case LANGUAGE_SET: {
+      return action.languageCode;
+    }
+    default: {
+      return state;
+    }
+  }
+}
+
+export function watchlistReducer(state = { list: [], includes: includes }, action) {
   switch (action.type) {
     case WATCHLIST_SET: {
       return { ...state, list: action.list };
@@ -27,7 +41,7 @@ export function watchlistReducer(state, action) {
   }
 }
 
-export function errorReducer(state, action) {
+export function errorReducer(state = { open: false, message: "" }, action) {
   switch (action.type) {
     case ERROR_SHOW:
       return {
@@ -46,7 +60,7 @@ export function errorReducer(state, action) {
   }
 }
 
-export function loginReducer(state, action) {
+export function loginReducer(state = { status: LOGIN_STATUS_FIRST_TIME, name: "" }, action) {
   switch (action.type) {
     case LOGIN_ACTION_LOGIN:
       return {
@@ -57,7 +71,8 @@ export function loginReducer(state, action) {
     case LOGIN_ACTION_LOGOUT:
       return {
         ...state,
-        status: LOGIN_STATUS_LOGGEDOUT
+        status: LOGIN_STATUS_LOGGEDOUT,
+        name: ""
       };
     default: {
       return state;

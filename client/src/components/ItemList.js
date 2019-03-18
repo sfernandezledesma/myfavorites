@@ -1,11 +1,15 @@
-import React, { memo, useContext } from 'react';
+import React from 'react';
 import { Grid, Card } from "@material-ui/core";
-import { AppWatchlist, AppWatchlistDispatch } from "../context/contexts";
 import Item from "./Item";
+import { connect } from 'react-redux';
 
-const ItemList = memo(({ items }) => {
-  const watchlist = useContext(AppWatchlist);
-  const watchlistDispatch = useContext(AppWatchlistDispatch);
+const mapStateToProps = state => {
+  return {
+    watchlist: state.watchlistReducer
+  };
+};
+
+function ItemList({ items, watchlist }) {
   console.log("ItemList rendered");
   return (
     <Grid container justify="center" spacing={16} style={{ width: "100%", margin: 0, padding: "1%" }}>
@@ -14,7 +18,6 @@ const ItemList = memo(({ items }) => {
           <Card style={{ display: "flex" }}>
             <Item 
             item={item}
-            watchlistDispatch={watchlistDispatch}
             isOnWatchlist={watchlist.includes(item.id)}
             />
           </Card>
@@ -22,6 +25,6 @@ const ItemList = memo(({ items }) => {
       ))}
     </Grid>
   );
-});
+}
 
-export default ItemList;
+export default connect(mapStateToProps)(ItemList);

@@ -1,10 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { AppLogin } from '../context/contexts';
-import { LOGIN_STATUS_LOGGEDIN } from '../context/reducers';
+import { LOGIN_STATUS_LOGGEDIN } from '../reducers';
 
-export function PrivateRoute({ path, render, component: Component, ...rest }) {
-  const loginState = useContext(AppLogin);
+function PrivateRoute({ path, render, component: Component, loginState, ...rest }) {
   const loggedIn = loginState.status === LOGIN_STATUS_LOGGEDIN;
 
   return <Route {...rest} path={path} render={(props) => {
@@ -22,3 +20,5 @@ export function PrivateRoute({ path, render, component: Component, ...rest }) {
     }
   }} />;
 }
+
+export default PrivateRoute;

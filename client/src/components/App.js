@@ -1,26 +1,27 @@
-import React, { Fragment, useEffect, useContext } from 'react';
-import { AppLogin, AppLoginDispatch, AppErrorDispatch } from "../context/contexts";
+import React, { Fragment, useEffect } from 'react';
+import { connect } from 'react-redux';
 import Search from '../pages/Search';
 import SignIn from '../pages/SignIn';
 import Register from '../pages/Register';
-import { Route, Redirect } from 'react-router-dom';
-import { PrivateRoute } from './Navigation';
+import { Route, Redirect, withRouter } from 'react-router-dom';
+import PrivateRoute from './PrivateRoute';
 import ErrorDialog from './ErrorDialog';
-import { ERROR_SHOW, LOGIN_ACTION_LOGIN, LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../context/reducers';
+import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers';
+import { login } from '../actions/loginActions';
+import { showError } from '../actions/errorActions';
+import { setWatchlist } from '../actions/watchlistActions';
 
-function App(props) {
-  const loginState = useContext(AppLogin);
-  const loginDispatch = useContext(AppLoginDispatch);
-  const errorDispatch = useContext(AppErrorDispatch);
+function App({ loginState, login, showError, setWatchlist }) {
   console.log("App rendered");
 
   useFirstTimeTokenCheck();
+  useWatchlist();
   useOnLoggingOut();
 
   return (
     <Fragment>
-      <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} />
-      <PrivateRoute exact path="/search/:query?" component={Search} />
+      <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} loginState={loginState} />
+      <PrivateRoute exact path="/search/:query?" component={Search} loginState={loginState} />
       <Route exact path="/signin" render={(props) => {
         if (loggedIn()) {
           const urlToGoNext = props.location.state ? props.location.state.from : "/search";
@@ -43,7 +44,7 @@ function App(props) {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
+            login(data.name);
           }
         });
     }, []); // Para que se ejecute una vez, es necesario pasar el [] como segundo argumento
@@ -58,10 +59,28 @@ function App(props) {
             if (data.success) {
               console.log("Successfully logged out.");
             } else {
-              errorDispatch({ type: ERROR_SHOW, message: "Could not clean authentication cookie. Refresh and try logging out again." });
+              showError("Could not clean authentication cookie. Refresh and try logging out again.");
             }
           })
-          .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Could not reach server. Refresh and try logging out again." }));
+          .catch(err => showError("Could not reach server. Refresh and try logging out again."));
+      }
+    }, [loginState.status]);
+  }
+
+  function useWatchlist() {
+    useEffect(() => { // Descarga la watchlist al logearse y la borra al salir
+      if (loginState.status === LOGIN_STATUS_LOGGEDIN) {
+        fetch("/api/watchlist/get")
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              console.log("Watchlist fetched:", data.watchlist);
+              setWatchlist(data.watchlist);
+            }
+          });
+      } else if (loginState.status === LOGIN_STATUS_LOGGEDOUT) {
+        console.log("Limpiando busqueda y watchlist de usuario...");
+        setWatchlist([]);
       }
     }, [loginState.status]);
   }
@@ -81,9 +100,9 @@ function App(props) {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
+          login(data.name);
         } else {
-          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
+          showError(data.status_message);
         }
       });
   }
@@ -91,7 +110,7 @@ function App(props) {
   function handleRegister(event) {
     event.preventDefault();
     if (event.target.password.value !== event.target.repeat_pass.value) {
-      errorDispatch({ type: ERROR_SHOW, message: "Passwords don't match." });
+      showError("Passwords don't match.");
     } else {
       const body = {
         name: event.target.name.value,
@@ -106,11 +125,18 @@ function App(props) {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            loginDispatch({ type: LOGIN_ACTION_LOGIN, name: data.name });
+            login(data.name);
           }
         });
     }
   };
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    loginState: state.loginReducer
+  };
+};
+const mapDispatchToProps = { login, showError, setWatchlist };
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

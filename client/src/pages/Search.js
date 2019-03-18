@@ -1,15 +1,13 @@
-import React, { Fragment, useContext, useState, useEffect, memo, useCallback } from 'react';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import ItemList from "../components/ItemList";
 import SearchTopBar from '../components/SearchTopBar';
-import { AppLoginDispatch, AppLanguage, AppErrorDispatch } from '../context/contexts';
-import { ERROR_SHOW, LOGIN_ACTION_LOGOUT } from '../context/reducers';
+import { connect } from 'react-redux';
+import { showError } from '../actions/errorActions';
+import { logout } from '../actions/loginActions';
 
-function Search(props) {
-  const languageCode = useContext(AppLanguage);
-  const loginDispatch = useContext(AppLoginDispatch);
-  const errorDispatch = useContext(AppErrorDispatch);
+function Search({languageCode, showError, logout, match, history}) {
   const [searchResults, setSearchResults] = useState([]);
-  const { query } = props.match.params;
+  const { query } = match.params;
   console.log("Search Component rendered");
   
   useEffect(() => {
@@ -32,22 +30,30 @@ function Search(props) {
         if (data.page) {
           setSearchResults(data.results);
         } else {
-          errorDispatch({ type: ERROR_SHOW, message: data.status_message });
+          showError( data.status_message );
           if (data.status_message.toLowerCase().includes("token")) {
-            loginDispatch({type: LOGIN_ACTION_LOGOUT});
+            logout();
           }
         }
       })
-      .catch(err => errorDispatch({ type: ERROR_SHOW, message: "Error connecting with API" }));
+      .catch(err => showError( "Error connecting with API" ));
   }
 
   function onSearch(searchTerm) {
     if (searchTerm) {
-      props.history.push("/search/" + searchTerm);
+      history.push("/search/" + searchTerm);
     } else {
-      errorDispatch({type: ERROR_SHOW, message: "Ignorar este error"});
+      console.log("asd");
+      showError("Ignorar este error");
     }
   }
 }
 
-export default memo(Search);
+const mapStateToProps = (state) => {
+  return {
+    languageCode: state.languageReducer
+  };
+};
+const mapDispatchToProps = { showError, logout };
+
+export default connect(mapStateToProps,mapDispatchToProps)(Search);

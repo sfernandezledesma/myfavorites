@@ -1,7 +1,8 @@
-import React, { useContext, useState, memo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
-import { AppLanguage, AppLanguageSet } from '../context/contexts';
+import { setLanguageCode } from '../actions/languageActions';
+import { connect } from 'react-redux';
 
 const options = [
   { name: "English", code: "en" },
@@ -9,9 +10,12 @@ const options = [
   { name: "Svenska", code: "sv" }
 ];
 
-const MenuLanguage = memo((props) => {
-  const languageCode = useContext(AppLanguage);
-  const setLanguageCode = useContext(AppLanguageSet);
+const mapStateToProps = state => {
+  return { languageCode: state.languageReducer };
+};
+const mapDispatchToProps = { setLanguageCode };
+
+function MenuLanguage({ languageCode, setLanguageCode }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   console.log("MenuLanguage rendered");
@@ -61,9 +65,9 @@ const MenuLanguage = memo((props) => {
   function handleClose() {
     setAnchorEl(null);
   }
-});
+}
 
-export default MenuLanguage;
+export default connect(mapStateToProps,mapDispatchToProps)(MenuLanguage);
 
 function indexOfLanguageCode(languageCode) {
   console.log("Index of language code calculated");
