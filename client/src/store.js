@@ -1,5 +1,8 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { loginReducer, watchlistReducer, errorReducer, languageReducer } from './reducers';
+import { loginReducer } from './reducers/loginReducer';
+import { watchlistReducer } from './reducers/watchlistReducer';
+import { errorReducer } from './reducers/errorReducer';
+import { languageReducer } from './reducers/languageReducer';
 
 const actionLogger = (store) => (next) => (action) => {
   console.log("Action:", action);

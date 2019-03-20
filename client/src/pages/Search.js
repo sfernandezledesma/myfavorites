@@ -5,6 +5,13 @@ import { connect } from 'react-redux';
 import { showError } from '../actions/errorActions';
 import { logout } from '../actions/loginActions';
 
+const mapStateToProps = (state) => {
+  return {
+    languageCode: state.languageReducer
+  };
+};
+const mapDispatchToProps = { showError, logout };
+
 function Search({languageCode, showError, logout, match, history}) {
   const [searchResults, setSearchResults] = useState([]);
   const { query } = match.params;
@@ -48,12 +55,5 @@ function Search({languageCode, showError, logout, match, history}) {
     }
   }
 }
-
-const mapStateToProps = (state) => {
-  return {
-    languageCode: state.languageReducer
-  };
-};
-const mapDispatchToProps = { showError, logout };
 
 export default connect(mapStateToProps,mapDispatchToProps)(Search);

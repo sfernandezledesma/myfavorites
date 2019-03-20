@@ -6,6 +6,16 @@ import {
 import { connect } from 'react-redux';
 import { closeError} from '../actions/errorActions';
 
+const mapStateToProps = (state) => {
+  return {
+    open: state.errorReducer.open,
+    message: state.errorReducer.message
+  };
+};
+const mapDispatchToProps = {
+  closeError
+};
+
 function ErrorDialog({ open, message, closeError }) {
   console.log("Error dialog rendered");
 
@@ -27,15 +37,5 @@ function ErrorDialog({ open, message, closeError }) {
     </Dialog >
   );
 }
-
-const mapStateToProps = (state) => {
-  return {
-    open: state.errorReducer.open,
-    message: state.errorReducer.message
-  };
-};
-const mapDispatchToProps = {
-  closeError
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ErrorDialog);

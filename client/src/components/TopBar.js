@@ -5,9 +5,16 @@ import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
 import { Button } from '@material-ui/core';
 import { Link, withRouter } from "react-router-dom";
-import { LOGIN_STATUS_LOGGEDIN } from '../reducers';
+import { LOGIN_STATUS_LOGGEDIN } from '../reducers/loginReducer';
 import { connect } from 'react-redux';
 import { logout } from '../actions/loginActions';
+
+const mapStateToProps = (state) => {
+  return {
+    loginState: state.loginReducer
+  };
+};
+const mapDispatchToProps = { logout };
 
 function TopBar({ children, location, loginState, logout }) {
   console.log("TopBar rendered");
@@ -56,13 +63,5 @@ function TopBar({ children, location, loginState, logout }) {
     }
   }
 }
-
-const mapStateToProps = (state) => {
-  return {
-    loginState: state.loginReducer
-  };
-};
-
-const mapDispatchToProps = { logout };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TopBar));

@@ -1,4 +1,4 @@
-import { WATCHLIST_SET, WATCHLIST_ADD, WATCHLIST_REMOVE } from "../reducers";
+import { WATCHLIST_SET, WATCHLIST_ADD, WATCHLIST_REMOVE } from "../reducers/watchlistReducer";
 
 export function setWatchlist(list) {
   return { type: WATCHLIST_SET, list: list};

@@ -6,10 +6,17 @@ import Register from '../pages/Register';
 import { Route, Redirect, withRouter } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import ErrorDialog from './ErrorDialog';
-import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers';
+import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers/loginReducer';
 import { login } from '../actions/loginActions';
 import { showError } from '../actions/errorActions';
 import { setWatchlist } from '../actions/watchlistActions';
+
+const mapStateToProps = (state) => {
+  return {
+    loginState: state.loginReducer
+  };
+};
+const mapDispatchToProps = { login, showError, setWatchlist };
 
 function App({ loginState, login, showError, setWatchlist }) {
   console.log("App rendered");
@@ -131,12 +138,5 @@ function App({ loginState, login, showError, setWatchlist }) {
     }
   };
 }
-
-const mapStateToProps = (state) => {
-  return {
-    loginState: state.loginReducer
-  };
-};
-const mapDispatchToProps = { login, showError, setWatchlist };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
