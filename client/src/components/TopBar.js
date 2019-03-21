@@ -48,9 +48,10 @@ function TopBar({ children, location, loginState, logout }) {
     const path = location.pathname;
     if (loggedIn()) {
       return (
-        <Fragment>
-          <Link to="/"><Button onClick={onClickLogout}>Logout</Button></Link>
+        <Fragment>          
           {!path.includes("/search") ? <Link to="/search"><Button>Search</Button></Link> : null}
+          {!path.includes("/watchlist") ? <Link to="/watchlist"><Button>Watchlist</Button></Link> : null}
+          <Link to="/"><Button onClick={onClickLogout}>Logout</Button></Link>
         </Fragment>
       );
     } else {

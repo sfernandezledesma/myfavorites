@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, useCallback } from 'react';
 import ItemList from "../components/ItemList";
-import SearchTopBar from '../components/SearchTopBar';
+import InputTopBar from '../components/InputTopBar';
 import { connect } from 'react-redux';
 import { showError } from '../actions/errorActions';
 import { logout } from '../actions/loginActions';
@@ -24,7 +24,7 @@ function Search({languageCode, showError, logout, match, history}) {
 
   return (
     <Fragment>
-      <SearchTopBar onSearch={useCallback(onSearch, [])} />
+      <InputTopBar onSubmit={useCallback(onSearch, [])} />
       <ItemList items={searchResults} />
     </Fragment>
   );

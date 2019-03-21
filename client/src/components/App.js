@@ -1,8 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
-import Search from '../pages/Search';
-import SignIn from '../pages/SignIn';
-import Register from '../pages/Register';
 import { Route, Redirect, withRouter } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import ErrorDialog from './ErrorDialog';
@@ -10,6 +7,10 @@ import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers/login
 import { login } from '../actions/loginActions';
 import { showError } from '../actions/errorActions';
 import { setWatchlist } from '../actions/watchlistActions';
+import Search from '../pages/Search';
+import SignIn from '../pages/SignIn';
+import Register from '../pages/Register';
+import Watchlist from '../pages/Watchlist';
 
 const mapStateToProps = (state) => {
   return {
@@ -27,8 +28,9 @@ function App({ loginState, login, showError, setWatchlist }) {
 
   return (
     <Fragment>
-      <PrivateRoute exact path="/" render={() => <Redirect to="/search" />} loginState={loginState} />
+      <PrivateRoute exact path="/" render={() => <Redirect to="/watchlist" />} loginState={loginState} />
       <PrivateRoute exact path="/search/:query?" component={Search} loginState={loginState} />
+      <PrivateRoute exact path="/watchlist" component={Watchlist} loginState={loginState} />
       <Route exact path="/signin" render={(props) => {
         if (loggedIn()) {
           const urlToGoNext = props.location.state ? props.location.state.from : "/search";

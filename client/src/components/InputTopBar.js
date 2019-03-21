@@ -3,14 +3,13 @@ import TopBar from "./TopBar";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 
-function SearchTopBar({ onSearch }) {
+function InputTopBar({ onSubmit, placeholder }) {
   console.log("SearchTopBar rendered");
   return (
     <TopBar>
       <SearchIcon />
       <InputBase
-        placeholder="Search…"
-        // onChange={onType}
+        placeholder={placeholder || "Search…"}
         onKeyPress={onKeyPress}
         fullWidth
       />
@@ -19,8 +18,8 @@ function SearchTopBar({ onSearch }) {
 
   function onKeyPress(event) {
     if (event.key === 'Enter')
-      return onSearch(event.target.value);
+      return onSubmit(event.target.value);
   }
 };
 
-export default SearchTopBar;
+export default InputTopBar;
