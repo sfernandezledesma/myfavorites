@@ -3,21 +3,23 @@ import { CardMedia, CardContent, CardActions, Typography, Button } from "@materi
 import { showError } from '../actions/errorActions';
 import { addToWatchlist, removeFromWatchlist } from '../actions/watchlistActions';
 import { connect } from 'react-redux';
+import ItemDetails from './ItemDetails';
 
 const mapStateToProps = state => {
   return { languageCode: state.languageReducer };
 };
 const mapDispatchToProps = { showError, addToWatchlist, removeFromWatchlist };
 
-function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, removeFromWatchlist }) {
+function Item({ languageCode, isOnWatchlist, basicInfo, showError, addToWatchlist, removeFromWatchlist }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [details, setDetails] = useState({});
+  const [moreDetailsFetched, setMoreDetailsFetched] = useState(false);
+  const [details, setDetails] = useState(basicInfo);
   console.log("Item rendered");
 
   useEffect(() => {
-    if (details.id) {
+    if (moreDetailsFetched) {
       console.log("Item details re-fetched");
-      fetchDetails();
+      fetchMoreDetails();
     }
   }, [languageCode]);
 
@@ -26,20 +28,20 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
       <Fragment>
         <CardMedia
           style={{ width: 200, height: 300, flex: 1 }}
-          image={(item.poster_path || item.profile_path) ? "https://image.tmdb.org/t/p/w500" + (item.poster_path || item.profile_path) : "#"}
-          title={item.name}
+          image={(details.poster_path || details.profile_path) ? "https://image.tmdb.org/t/p/w500" + (details.poster_path || details.profile_path) : "#"}
+          title={details.name}
         />
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <CardContent style={{ flex: 9, overflow: "auto" }}>
             <Typography variant="subtitle1">
-              {item.name || item.title}
+              {details.name || details.title}
             </Typography>
             <Typography>
-              {item.media_type === "person" ? "PERSON" :
-                (item.first_air_date || item.release_date || "").split("-")[0] + " | " + item.media_type.toUpperCase()}{item.origin_country ? " | " + item.origin_country.join(", ") : ""}
+              {details.media_type === "person" ? "PERSON" :
+                (details.first_air_date || details.release_date || "").split("-")[0] + " | " + details.media_type.toUpperCase()}{details.origin_country ? " | " + details.origin_country.join(", ") : ""}
             </Typography>
             <Typography>
-              {item.overview ? item.overview.slice(0, 70) + "..." : "No overview available."}
+              {details.overview ? details.overview.slice(0, 70) + "..." : "No overview available."}
             </Typography>
           </CardContent>
           <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
@@ -57,7 +59,10 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
     return (
       <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
         <CardContent style={{ flex: "auto" }}>
-          {renderDetailsCardContent()}
+          <Typography variant="subtitle1">
+            {details.name || details.title}
+          </Typography>
+          <ItemDetails details={details} />
         </CardContent>
         <CardActions style={{ flex: "auto", display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
           <Button size="small" onClick={onDetailsClose}>Back</Button>
@@ -66,14 +71,15 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
     );
   }
 
-  function fetchDetails() {
-    const { id, media_type } = item;
+  function fetchMoreDetails() {
+    const { id, media_type } = details;
     return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.id) {
-          setDetails(data);
+          setDetails({ ...details, ...data });
+          setMoreDetailsFetched(true);
         } else {
           showError(data.status_message);
         }
@@ -82,11 +88,10 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
   }
 
   async function onDetailsOpen() {
-    const { id } = item;
-    if (details.id === id) {
+    if (moreDetailsFetched) {
       // No hace faltar hacer nada
     } else {
-      await fetchDetails();
+      await fetchMoreDetails();
     }
     setDetailsOpen(true);
   }
@@ -95,53 +100,9 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
     setDetailsOpen(false);
   }
 
-  function renderDetailsCardContent() {
-    if (item.media_type === "person") {
-      return (
-        <Fragment>
-          <Typography variant="subtitle1">
-            {details.name || ""}
-          </Typography>
-          <Typography>
-            {details.birthday ? "Birthday: " + details.birthday : ""}
-          </Typography>
-          <Typography>
-            {details.known_for_department ? "Known for: " + details.known_for_department : ""}
-          </Typography>
-          <Typography gutterBottom>
-            {details.place_of_birth ? "Place of birth: " + details.place_of_birth : ""}
-          </Typography>
-          <Typography align="justify">
-            {details.biography || ""}
-          </Typography>
-        </Fragment>
-      );
-    } else {
-      return (
-        <Fragment>
-          <Typography variant="subtitle1">
-            {details.name || details.title}
-          </Typography>
-          <Typography>
-            {(details.first_air_date || details.release_date || "").split("-")[0]}{" | " + item.media_type.toUpperCase() + (details.runtime ? " | " + details.runtime + " mins" : "")}
-          </Typography>
-          <Typography>
-            {details.genres ? details.genres.map(genre => genre.name).join(", ") : ""}
-          </Typography>
-          <Typography gutterBottom>
-            {details.vote_average ? "TMDb Rating: " + details.vote_average + " | Votes: " + details.vote_count : ""}
-          </Typography>
-          <Typography align="justify">
-            {details.overview || details.biography || ""}
-          </Typography>
-        </Fragment>
-      );
-    }
-  }
-
   function onAdd() {
-    const name = item.name || item.title;
-    const { id } = item;
+    const name = details.name || details.title;
+    const { id } = details;
     const newItem = { name: name, id: id };
     fetch("/api/watchlist/add", {
       method: "post",
@@ -160,7 +121,7 @@ function Item({ languageCode, isOnWatchlist, item, showError, addToWatchlist, re
   }
 
   function onRemove() {
-    const { id } = item;
+    const { id } = details;
     const body = { id: id };
     fetch("/api/watchlist/remove", {
       method: "post",

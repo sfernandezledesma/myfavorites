@@ -3,8 +3,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
-import { Button } from '@material-ui/core';
-import { withRouter } from "react-router-dom";
 import { LOGIN_STATUS_LOGGEDIN } from '../reducers/loginReducer';
 import { connect } from 'react-redux';
 import { logout } from '../actions/loginActions';
@@ -17,7 +15,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = { logout };
 
-function TopBar({ children, location, loginState, logout }) {
+function TopBar({ children, loginState, logout }) {
   console.log("TopBar rendered");
 
   useEffect(() => {
@@ -47,7 +45,6 @@ function TopBar({ children, location, loginState, logout }) {
   }
 
   function renderNavButtons() {
-    const path = location.pathname;
     if (loggedIn()) {
       return (
         <Fragment>
@@ -66,4 +63,4 @@ function TopBar({ children, location, loginState, logout }) {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TopBar));
+export default connect(mapStateToProps, mapDispatchToProps)(TopBar);

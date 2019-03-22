@@ -8,3 +8,17 @@ export function includes(id) {
   }
   return false;
 }
+
+export function getMediaTypeFromId(id) {
+  const prefix = id[0];
+  switch(prefix) {
+    case "m":
+      return "movie";
+    case "t":
+      return "tv";
+    case "p":
+      return "person";
+    default:
+      return "unknown";
+  }
+}
