@@ -4,10 +4,11 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
 import { Button } from '@material-ui/core';
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { LOGIN_STATUS_LOGGEDIN } from '../reducers/loginReducer';
 import { connect } from 'react-redux';
 import { logout } from '../actions/loginActions';
+import Link from './Link';
 
 const mapStateToProps = (state) => {
   return {
@@ -26,12 +27,13 @@ function TopBar({ children, location, loginState, logout }) {
   return (
     <AppBar position="sticky" color="default">
       <Toolbar>
-        <Typography color="inherit">
+        {renderNavButtons()}
+        {children}
+        <MenuLanguage />
+        <Typography color="inherit" style={{ marginRight: "5px" }}>
           {loggedIn() ? loginState.name : "MyFavorites"}
         </Typography>
-        <MenuLanguage />
-        {children}
-        {renderNavButtons()}
+        {loggedIn() ? <Link to="/signin" onClick={onClickLogout}>Logout</Link> : null}
       </Toolbar>
     </AppBar>
   );
@@ -48,17 +50,16 @@ function TopBar({ children, location, loginState, logout }) {
     const path = location.pathname;
     if (loggedIn()) {
       return (
-        <Fragment>          
-          {!path.includes("/search") ? <Link to="/search"><Button>Search</Button></Link> : null}
-          {!path.includes("/watchlist") ? <Link to="/watchlist"><Button>Watchlist</Button></Link> : null}
-          <Link to="/"><Button onClick={onClickLogout}>Logout</Button></Link>
+        <Fragment>
+          <Link to="/watchlist">Watchlist</Link>
+          <Link to="/search">Search</Link>
         </Fragment>
       );
     } else {
       return (
         <Fragment>
-          {path !== "/signin" ? <Link to="/"><Button>Sign In</Button></Link> : null}
-          {path !== "/register" ? <Link to="/register"><Button>Register</Button></Link> : null}
+          <Link to="/signin">Sign In</Link>
+          <Link to="/register">Register</Link>
         </Fragment>
       );
     }

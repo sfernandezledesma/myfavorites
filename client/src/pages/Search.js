@@ -4,6 +4,7 @@ import InputTopBar from '../components/InputTopBar';
 import { connect } from 'react-redux';
 import { showError } from '../actions/errorActions';
 import { logout } from '../actions/loginActions';
+import { Typography } from '@material-ui/core';
 
 const mapStateToProps = (state) => {
   return {
@@ -12,11 +13,11 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = { showError, logout };
 
-function Search({languageCode, showError, logout, match, history}) {
+function Search({ languageCode, showError, logout, match, history }) {
   const [searchResults, setSearchResults] = useState([]);
   const { query } = match.params;
   console.log("Search Component rendered");
-  
+
   useEffect(() => {
     if (query)
       search(query);
@@ -25,6 +26,10 @@ function Search({languageCode, showError, logout, match, history}) {
   return (
     <Fragment>
       <InputTopBar onSubmit={useCallback(onSearch, [])} />
+      {searchResults.length === 0 ?
+        <Typography variant="h5" align="center">Search Movies, TV Shows, and People</Typography>
+        : null
+      }
       <ItemList items={searchResults} />
     </Fragment>
   );
@@ -37,13 +42,13 @@ function Search({languageCode, showError, logout, match, history}) {
         if (data.page) {
           setSearchResults(data.results);
         } else {
-          showError( data.status_message );
+          showError(data.status_message);
           if (data.status_message.toLowerCase().includes("token")) {
             logout();
           }
         }
       })
-      .catch(err => showError( "Error connecting with API" ));
+      .catch(err => showError("Error connecting with API"));
   }
 
   function onSearch(searchTerm) {
@@ -56,4 +61,4 @@ function Search({languageCode, showError, logout, match, history}) {
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Search);
+export default connect(mapStateToProps, mapDispatchToProps)(Search);
