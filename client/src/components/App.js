@@ -10,7 +10,7 @@ import { setWatchlistClient } from '../actions/watchlistActions';
 import Search from '../pages/Search';
 import SignIn from '../pages/SignIn';
 import Register from '../pages/Register';
-import Watchlist from '../pages/Watchlist';
+import MyWatchlist from '../pages/MyWatchlist';
 
 const mapStateToProps = (state) => {
   return {
@@ -29,12 +29,12 @@ function App({ loginState, login, showError, setWatchlistClient }) {
 
   return (
     <Fragment>
-      <PrivateRoute exact path="/" render={() => <Redirect to="/watchlist" />} loginState={loginState} />
+      <PrivateRoute exact path="/" render={() => <Redirect to="/mywatchlist" />} loginState={loginState} />
       <PrivateRoute exact path="/search/:query?" component={Search} loginState={loginState} />
-      <PrivateRoute exact path="/watchlist" component={Watchlist} loginState={loginState} />
+      <PrivateRoute exact path="/mywatchlist" component={MyWatchlist} loginState={loginState} />
       <Route exact path="/signin" render={(props) => {
         if (loggedIn()) {
-          const urlToGoNext = props.location.state ? props.location.state.from : "/search";
+          const urlToGoNext = props.location.state ? props.location.state.from : "/mywatchlist";
           return <Redirect to={urlToGoNext} />;
         } else {
           return <SignIn handleSignIn={handleSignIn} {...props} />;
