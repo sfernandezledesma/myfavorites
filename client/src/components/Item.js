@@ -47,9 +47,11 @@ function Item({ languageCode, isOnWatchlist, basicInfo, showError, addToWatchlis
           <CardActions style={{ flex: 1, display: "flex", flexDirection: "row-reverse", alignItems: "flex-end" }}>
             <Button size="small" onClick={onDetailsOpen}>More Info</Button>
             {
-              isOnWatchlist
-                ? <Button size="small" onClick={onRemove}>Remove</Button>
-                : <Button size="small" onClick={onAdd}>Add</Button>
+              isOnWatchlist ?
+                <Button size="small" onClick={onRemove}>Remove From Watchlist</Button>
+                : (details.media_type !== "person") ?
+                  <Button size="small" onClick={onAdd}>Add To Watchlist</Button>
+                  : null
             }
           </CardActions>
         </div>
@@ -103,40 +105,11 @@ function Item({ languageCode, isOnWatchlist, basicInfo, showError, addToWatchlis
   function onAdd() {
     const name = details.name || details.title;
     const { id } = details;
-    const newItem = { name: name, id: id };
-    fetch("/api/watchlist/add", {
-      method: "post",
-      body: JSON.stringify(newItem),
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          addToWatchlist(newItem);
-        } else {
-          showError(data.status_message);
-        }
-      })
-      .catch(err => showError(err.toString()));
+    addToWatchlist({ name: name, id: id });
   }
 
   function onRemove() {
-    const { id } = details;
-    const body = { id: id };
-    fetch("/api/watchlist/remove", {
-      method: "post",
-      body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          removeFromWatchlist(id);
-        } else {
-          showError(data.status_message);
-        }
-      })
-      .catch(err => showError(err.toString()));
+    removeFromWatchlist(details.id);
   }
 }
 

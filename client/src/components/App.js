@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Route, Redirect, withRouter } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import ErrorDialog from './ErrorDialog';
 import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers/loginReducer';
 import { login } from '../actions/loginActions';
 import { showError } from '../actions/errorActions';
-import { setWatchlist } from '../actions/watchlistActions';
+import { setWatchlistClient } from '../actions/watchlistActions';
 import Search from '../pages/Search';
 import SignIn from '../pages/SignIn';
 import Register from '../pages/Register';
@@ -17,9 +17,10 @@ const mapStateToProps = (state) => {
     loginState: state.loginReducer
   };
 };
-const mapDispatchToProps = { login, showError, setWatchlist };
+const mapDispatchToProps = { login, showError, setWatchlistClient };
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 
-function App({ loginState, login, showError, setWatchlist }) {
+function App({ loginState, login, showError, setWatchlistClient }) {
   console.log("App rendered");
 
   useFirstTimeTokenCheck();
@@ -84,12 +85,12 @@ function App({ loginState, login, showError, setWatchlist }) {
           .then(data => {
             if (data.success) {
               console.log("Watchlist fetched:", data.watchlist);
-              setWatchlist(data.watchlist);
+              setWatchlistClient(data.watchlist);
             }
           });
       } else if (loginState.status === LOGIN_STATUS_LOGGEDOUT) {
         console.log("Limpiando busqueda y watchlist de usuario...");
-        setWatchlist([]);
+        setWatchlistClient([]);
       }
     }, [loginState.status]);
   }
@@ -140,5 +141,3 @@ function App({ loginState, login, showError, setWatchlist }) {
     }
   };
 }
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
