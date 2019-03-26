@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App';
+import App from './App';
 import * as serviceWorker from './serviceWorker';
-import DarkTheme from './components/DarkTheme';
+import DarkTheme from './DarkTheme';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';

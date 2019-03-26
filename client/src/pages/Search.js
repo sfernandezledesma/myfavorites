@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, useCallback } from 'react';
-import ItemList from "../components/ItemList";
-import InputTopBar from '../components/InputTopBar';
+import ItemList from "../components/Item/ItemList";
+import InputTopBar from '../components/TopBar/InputTopBar';
 import { connect } from 'react-redux';
 import { showError } from '../actions/errorActions';
 import { logout } from '../actions/loginActions';

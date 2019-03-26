@@ -3,10 +3,10 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuLanguage from "./MenuLanguage";
-import { LOGIN_STATUS_LOGGEDIN } from '../reducers/loginReducer';
+import { LOGIN_STATUS_LOGGEDIN } from '../../reducers/loginReducer';
 import { connect } from 'react-redux';
-import { logout } from '../actions/loginActions';
-import Link from './Link';
+import { logout } from '../../actions/loginActions';
+import Link from '../Navigation/Link';
 
 const mapStateToProps = (state) => {
   return {

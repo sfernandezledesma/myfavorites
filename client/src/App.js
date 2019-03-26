@@ -1,22 +1,18 @@
 import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
-import PrivateRoute from './PrivateRoute';
-import ErrorDialog from './ErrorDialog';
-import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from '../reducers/loginReducer';
-import { login } from '../actions/loginActions';
-import { showError } from '../actions/errorActions';
-import { setWatchlistClient } from '../actions/watchlistActions';
-import Search from '../pages/Search';
-import SignIn from '../pages/SignIn';
-import Register from '../pages/Register';
-import MyWatchlist from '../pages/MyWatchlist';
+import PrivateRoute from './components/Navigation/PrivateRoute';
+import ErrorDialog from './components/ErrorDialog';
+import { LOGIN_STATUS_LOGGEDIN, LOGIN_STATUS_LOGGEDOUT } from './reducers/loginReducer';
+import { login } from './actions/loginActions';
+import { showError } from './actions/errorActions';
+import { setWatchlistClient } from './actions/watchlistActions';
+import Search from './pages/Search';
+import SignIn from './pages/SignIn';
+import Register from './pages/Register';
+import MyWatchlist from './pages/MyWatchlist';
 
-const mapStateToProps = (state) => {
-  return {
-    loginState: state.loginReducer
-  };
-};
+const mapStateToProps = (state) => ({ loginState: state.loginReducer });
 const mapDispatchToProps = { login, showError, setWatchlistClient };
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 

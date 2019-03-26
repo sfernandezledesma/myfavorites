@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { CardMedia, CardContent, CardActions, Typography, Button } from "@material-ui/core";
-import { showError } from '../actions/errorActions';
-import { addToWatchlist, removeFromWatchlist } from '../actions/watchlistActions';
+import { showError } from '../../actions/errorActions';
+import { addToWatchlist, removeFromWatchlist } from '../../actions/watchlistActions';
 import { connect } from 'react-redux';
 import ItemDetails from './ItemDetails';
 

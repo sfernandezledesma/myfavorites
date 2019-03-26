@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
-import InputTopBar from '../components/InputTopBar';
+import InputTopBar from '../components/TopBar/InputTopBar';
 import { Typography } from '@material-ui/core';
 import Watchlist from '../components/Watchlist';
 

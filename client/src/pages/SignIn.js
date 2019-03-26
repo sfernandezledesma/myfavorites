@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from "react-router-dom";
-import TopBar from '../components/TopBar';
+import TopBar from '../components/TopBar/TopBar';
 
 const styles = theme => ({
   main: {

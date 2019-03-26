@@ -1,13 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { List } from '@material-ui/core';
-import ItemWatchlist from '../components/ItemWatchlist';
+import ItemWatchlist from './Item/ItemWatchlist';
 
-const mapStateToProps = state => {
-  return {
-    myWatchlist: state.watchlistReducer
-  };
-};
+const mapStateToProps = state => ({ myWatchlist: state.watchlistReducer });
+export default connect(mapStateToProps)(Watchlist);
 
 function Watchlist({ watchlist, filter, isMine, myWatchlist }) {
   return (
@@ -27,5 +24,3 @@ function Watchlist({ watchlist, filter, isMine, myWatchlist }) {
     </div>
   );
 }
-
-export default connect(mapStateToProps)(Watchlist);

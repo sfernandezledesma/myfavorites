@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import LanguageIcon from "@material-ui/icons/Language";
-import { setLanguageCode } from '../actions/languageActions';
+import { setLanguageCode } from '../../actions/languageActions';
 import { connect } from 'react-redux';
 
 const options = [

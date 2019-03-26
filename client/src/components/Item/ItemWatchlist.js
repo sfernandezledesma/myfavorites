@@ -1,12 +1,12 @@
 import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
-import { showError } from '../actions/errorActions';
-import { addToWatchlist, removeFromWatchlist } from '../actions/watchlistActions';
+import { showError } from '../../actions/errorActions';
+import { addToWatchlist, removeFromWatchlist } from '../../actions/watchlistActions';
 import { ListItemIcon, ListItemText, Collapse, ListItem, ListItemSecondaryAction, IconButton, Button } from '@material-ui/core';
 import MovieIcon from '@material-ui/icons/Movie';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import { getMediaTypeFromId } from '../utils';
+import { getMediaTypeFromId } from '../../utils';
 import ItemDetails from './ItemDetails';
 
 const mapStateToProps = state => ({ languageCode: state.languageReducer });
