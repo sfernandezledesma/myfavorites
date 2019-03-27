@@ -48,7 +48,7 @@ function TopBar({ children, loginState, logout }) {
     if (loggedIn()) {
       return (
         <Fragment>
-          <Link to="/watchlist">Watchlist</Link>
+          <Link to="/mywatchlist">Watchlist</Link>
           <Link to="/search">Search</Link>
         </Fragment>
       );
