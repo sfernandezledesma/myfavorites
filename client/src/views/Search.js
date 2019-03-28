@@ -40,6 +40,7 @@ function Search({ languageCode, showError, logout, match, history }) {
       .then(data => {
         console.log(data);
         if (data.page) {
+          console.log("Setting new search results");
           setSearchResults(data.results);
         } else {
           showError(data.status_message);

@@ -34,7 +34,7 @@ const login = (req, res) => {
   const password = req.body.password;
 
   if (email && password) {
-    db.select("password_hash", "name", "id").from("users").where("email", email)
+    db.select("user_password_hash", "user_name", "user_id").from("app_user").where("user_email", email)
       .then(results => {
         if (!results[0]) {
           return res.status(400).json({
@@ -42,8 +42,8 @@ const login = (req, res) => {
             status_message: "No user found with that email"
           });
         }
-        const name = results[0].name;
-        const password_hash = results[0].password_hash;
+        const name = results[0].user_name;
+        const password_hash = results[0].user_password_hash;
         const id = results[0].id;
         if (bcrypt.compareSync(password, password_hash)) {
           const token = jwt.sign({ email: email, name: name, id: id }, config.secret, { expiresIn: '24h' });
@@ -81,14 +81,14 @@ const register = (req, res) => {
   } else {
     const password_hash = bcrypt.hashSync(password);
     db.insert({
-      email: email,
-      name: name,
-      password_hash: password_hash,
-      joined: new Date()
-    }).into("users")
-      .returning("id")
-      .then(id => {
-        const token = jwt.sign({ email: email, name: name, id: id[0] },
+      user_email: email,
+      user_name: name,
+      user_password_hash: password_hash,
+      user_joined: new Date()
+    }).into("app_user")
+      .returning("user_id")
+      .then(user_id => {
+        const token = jwt.sign({ email: email, name: name, id: user_id[0] },
           config.secret, { expiresIn: '24h' });
         res.cookie('token', token, { httpOnly: true });
         res.json({
@@ -123,7 +123,7 @@ app.get('/api/search/:language/:title', checkToken, (req, res) => {
     .then(response => response.json())
     .then(data => {
       data.results.forEach((item) => {
-        item.id = item.media_type[0] + "_" + item.id; // Cambiando el id para evitar colisiones (puede haber pelicula y serie con mismo id)
+        item.id = { media_type: item.media_type, media_tmdb_id: item.id };
       });
       res.json(data);
     })
@@ -131,19 +131,18 @@ app.get('/api/search/:language/:title', checkToken, (req, res) => {
 });
 
 app.get('/api/id/:language/:media_type/:id', checkToken, (req, res) => {
-  const { language, media_type } = req.params;
-  const id = req.params.id.split("_")[1];
+  const { language, media_type, id } = req.params;
   fetch(`https://api.themoviedb.org/3/${media_type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=${language}`)
     .then(response => response.json())
     .then(data => {
-      data.id = media_type[0] + "_" + data.id;
+      data.id = { media_type: media_type, media_tmdb_id: data.id };
       res.json(data);
     })
     .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to TMDb API" }));
 });
 
-app.get("/api/users", (req, res) => {
-  db.select().from("users")
+app.get("/api/users", checkToken, (req, res) => {
+  db.select("user_name as name", "user_id as id").from("app_user")
     .then(users => {
       res.json(users);
     })
@@ -152,9 +151,15 @@ app.get("/api/users", (req, res) => {
 
 app.get("/api/watchlist/get", checkToken, (req, res) => {
   const userId = req.decoded.id;
-  db.select("item_id as id", "name").from("watchlists").where("user_id", userId)
+  db.select("media_tmdb_id", "media_type", "media_name").from("wants_to_watch").where("user_id", userId)
     .then(data => {
-      res.status(200).json({ success: true, watchlist: data, status_message: "Got watchlist" });
+      const watchlist = data.map(item => {
+        return {
+          id: { media_type: item.media_type, media_tmdb_id: item.media_tmdb_id },
+          name: item.media_name
+        };
+      });
+      res.status(200).json({ success: true, watchlist: watchlist, status_message: "Got watchlist" });
     })
     .catch(err => {
       console.log(err);
@@ -165,27 +170,36 @@ app.get("/api/watchlist/get", checkToken, (req, res) => {
 app.post("/api/watchlist/add", checkToken, (req, res) => {
   const { id, name } = req.body;
   const userId = req.decoded.id;
-  db.insert({
-    id: id + "_" + userId,
-    name: name,
-    item_id: id,
-    user_id: userId
-  })
-    .into("watchlists")
-    .then(data => {
-      res.status(200).json({ success: true, status_message: "Item added to watchlist" });
+  db.raw('INSERT INTO media(media_tmdb_id, media_type) VALUES (:media_tmdb_id, :media_type) ON CONFLICT (media_tmdb_id, media_type) DO NOTHING', id)
+    .then(results => {
+      db.insert({
+        media_tmdb_id: id.media_tmdb_id,
+        media_type: id.media_type,
+        media_name: name,
+        user_id: userId
+      })
+        .into("wants_to_watch")
+        .then(data => {
+          res.status(200).json({ success: true, status_message: "Item added to watchlist" });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(400).json({ success: false, status_message: "Item already in watchlist" });
+        });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(400).json({ success: false, status_message: "Item already in watchlist" });
-    });
+  .catch(err => {
+    console.log(err);
+    res.status(400).json({ success: false, status_message: err.toString() });
+  });
 });
 
 app.post("/api/watchlist/remove", checkToken, (req, res) => {
   const userId = req.decoded.id;
   const { id } = req.body;
-  db("watchlists")
-    .where("id", id + "_" + userId)
+  db("wants_to_watch")
+    .where("user_id", userId)
+    .andWhere("media_type", id.media_type)
+    .andWhere("media_tmdb_id", id.media_tmdb_id)
     .del()
     .then(data => {
       res.status(200).json({ success: true, status_message: "Item deleted from watchlist" });

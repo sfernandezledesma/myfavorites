@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { List } from '@material-ui/core';
 import ItemWatchlist from './Item/ItemWatchlist';
+import {createReactKeyFromMediaId} from '../utils';
 
 const mapStateToProps = state => ({ myWatchlist: state.watchlistReducer });
 export default connect(mapStateToProps)(Watchlist);
@@ -13,7 +14,7 @@ function Watchlist({ watchlist, filter, isMine, myWatchlist }) {
         {
           watchlist.filter((item) => item.name.toLowerCase().includes(filter)).map((item) => (
             <ItemWatchlist
-              key={item.id}
+              key={createReactKeyFromMediaId(item.id)}
               id={item.id}
               name={item.name}
               onMyWatchlist={isMine ? true : myWatchlist.includes(item.id)}

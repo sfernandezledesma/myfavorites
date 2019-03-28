@@ -6,7 +6,6 @@ import { ListItemIcon, ListItemText, Collapse, ListItem, ListItemSecondaryAction
 import MovieIcon from '@material-ui/icons/Movie';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
-import { getMediaTypeFromId } from '../../utils';
 import ItemDetails from './ItemDetails';
 
 const mapStateToProps = state => ({ languageCode: state.languageReducer });
@@ -69,13 +68,12 @@ function ItemWatchlist({ id, name, onMyWatchlist, languageCode, addToWatchlist, 
   }
 
   function fetchMoreDetails() {
-    const media_type = getMediaTypeFromId(id);
-    return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
+    return fetch(`/api/id/${languageCode}/${id.media_type}/${id.media_tmdb_id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
         if (data.id) {
-          setDetails({ ...details, media_type: media_type, ...data });
+          setDetails({ ...details, media_type: id.media_type, ...data });
           setMoreDetailsFetched(true);
         } else {
           showError(data.status_message);

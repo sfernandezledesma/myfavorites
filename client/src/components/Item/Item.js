@@ -20,8 +20,10 @@ function Item({ languageCode, isOnWatchlist, basicInfo, showError, addToWatchlis
     if (moreDetailsFetched) {
       console.log("Item details re-fetched");
       fetchMoreDetails();
+    } else {
+      setDetails(basicInfo);
     }
-  }, [languageCode]);
+  }, [languageCode, basicInfo]);
 
   if (!detailsOpen) {
     return (
@@ -74,8 +76,8 @@ function Item({ languageCode, isOnWatchlist, basicInfo, showError, addToWatchlis
   }
 
   function fetchMoreDetails() {
-    const { id, media_type } = details;
-    return fetch(`/api/id/${languageCode}/${media_type}/${id}`)
+    const { id } = details;
+    return fetch(`/api/id/${languageCode}/${id.media_type}/${id.media_tmdb_id}`)
       .then(response => response.json())
       .then(data => {
         console.log(data);
