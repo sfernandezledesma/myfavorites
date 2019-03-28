@@ -44,7 +44,7 @@ const login = (req, res) => {
         }
         const name = results[0].user_name;
         const password_hash = results[0].user_password_hash;
-        const id = results[0].id;
+        const id = results[0].user_id;
         if (bcrypt.compareSync(password, password_hash)) {
           const token = jwt.sign({ email: email, name: name, id: id }, config.secret, { expiresIn: '24h' });
           res.cookie('token', token, { httpOnly: true });
