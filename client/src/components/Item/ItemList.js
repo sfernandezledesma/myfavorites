@@ -19,7 +19,7 @@ function ItemList({ items, watchlist }) {
           <Card style={{ display: "flex" }}>
             <Item 
             basicInfo={item}
-            isOnWatchlist={false}// isOnWatchlist={watchlist.includes(item.id)}
+            isOnWatchlist={watchlist.includes(item.id)}
             />
           </Card>
         </Grid>
