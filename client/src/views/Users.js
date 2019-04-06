@@ -27,7 +27,7 @@ function Users() {
           {
             usersList.map(user => {
               return (
-                <Link key={user.id} to={`/user/${user.name}`}>
+                <Link key={user.id} to={`/user/${user.id}`}>
                   <ListItem>
                     <ListItemIcon>
                       <UserIcon />

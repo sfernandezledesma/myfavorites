@@ -12,6 +12,7 @@ import SignIn from './views/SignIn';
 import Register from './views/Register';
 import MyWatchlist from './views/MyWatchlist';
 import Users from './views/Users';
+import UserInfo from './views/UserInfo';
 
 const mapStateToProps = (state) => ({ loginState: state.loginReducer });
 const mapDispatchToProps = { login, showError, setWatchlistClient };
@@ -30,6 +31,7 @@ function App({ loginState, login, showError, setWatchlistClient }) {
       <PrivateRoute exact path="/search/:query?" component={Search} loginState={loginState} />
       <PrivateRoute exact path="/mywatchlist" component={MyWatchlist} loginState={loginState} />
       <PrivateRoute exact path="/users" component={Users} loginState={loginState} />
+      <PrivateRoute exact path="/user/:id" component={UserInfo} loginState={loginState} />
       <Route exact path="/signin" render={(props) => {
         if (loggedIn()) {
           const urlToGoNext = props.location.state ? props.location.state.from : "/mywatchlist";

@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core';
 import Watchlist from '../components/Watchlist';
 
 const mapStateToProps = state => {
-  return { watchlist: state.watchlistReducer.list };
+  return { watchlist: state.watchlistReducer };
 };
 
 function MyWatchlist({ watchlist }) {

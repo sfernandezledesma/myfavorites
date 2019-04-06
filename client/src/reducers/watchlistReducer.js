@@ -1,19 +1,19 @@
-import { includes } from "../utils";
+import { includes, equalsMediaID } from "../utils";
 export const
   WATCHLIST_SET = "WATCHLIST_SET",
   WATCHLIST_ADD = "WATCHLIST_ADD",
   WATCHLIST_REMOVE = "WATCHLIST_REMOVE";
 
-export function watchlistReducer(state = { list: [], includes: includes }, action) {
+export function watchlistReducer(state = [], action) {
   switch (action.type) {
     case WATCHLIST_SET: {
-      return { ...state, list: action.list };
+      return [...action.list];
     }
     case WATCHLIST_ADD: {
-      return { ...state, list: [...state.list, action.item] };
+      return [...state, action.item];
     }
     case WATCHLIST_REMOVE: {
-      return { ...state, list: state.list.filter((value) => (value.id !== action.id)) };
+      return [...state.filter((item) => !equalsMediaID(item.id, action.id))];
     }
     default: {
       return state;

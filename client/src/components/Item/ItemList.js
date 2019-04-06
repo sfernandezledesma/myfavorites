@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Card } from "@material-ui/core";
 import Item from "./Item";
 import { connect } from 'react-redux';
-import {createReactKeyFromMediaId} from '../../utils';
+import {createReactKeyFromMediaId, listIncludesMediaID} from '../../utils';
 
 const mapStateToProps = state => {
   return {
@@ -19,7 +19,7 @@ function ItemList({ items, watchlist }) {
           <Card style={{ display: "flex" }}>
             <Item 
             basicInfo={item}
-            isOnWatchlist={watchlist.includes(item.id)}
+            isOnWatchlist={listIncludesMediaID(watchlist, item.id)}
             />
           </Card>
         </Grid>

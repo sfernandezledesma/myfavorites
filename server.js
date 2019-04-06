@@ -149,6 +149,35 @@ app.get("/api/users", checkToken, (req, res) => {
     .catch(err => res.status(400).json({ success: false, status_message: "Could not connect to database" }));
 });
 
+app.get("/api/user/:id", checkToken, (req, res) => {
+  const id = req.params.id;
+  let info = { id: id };
+  db.select("user_name")
+    .from("app_user")
+    .where("user_id", id)
+    .then(data => {
+      info.name = data[0].user_name;
+      db.select("media_tmdb_id", "media_type", "media_name").from("wants_to_watch").where("user_id", id)
+        .then(data => {
+          info.watchlist = data.map(item => {
+            return {
+              id: { media_type: item.media_type, media_tmdb_id: item.media_tmdb_id },
+              name: item.media_name
+            };
+          });
+          res.status(200).json({ success: true, info, status_message: "Got user info" });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(400).json({ success: false, status_message: "Database error" });
+        });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false, status_message: "Database error" });
+    });
+});
+
 app.get("/api/watchlist/get", checkToken, (req, res) => {
   const userId = req.decoded.id;
   db.select("media_tmdb_id", "media_type", "media_name").from("wants_to_watch").where("user_id", userId)
@@ -187,10 +216,10 @@ app.post("/api/watchlist/add", checkToken, (req, res) => {
           res.status(400).json({ success: false, status_message: "Item already in watchlist" });
         });
     })
-  .catch(err => {
-    console.log(err);
-    res.status(400).json({ success: false, status_message: err.toString() });
-  });
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ success: false, status_message: err.toString() });
+    });
 });
 
 app.post("/api/watchlist/remove", checkToken, (req, res) => {
